@@ -4,6 +4,11 @@ import './globals.css'
 export const metadata: Metadata = {
 	title: 'Setlist Manager',
 	description: 'Manage your band setlists',
+	icons: {
+		icon: '/favicon.png',
+		shortcut: '/favicon.png',
+		apple: '/favicon.png',
+	},
 }
 
 export default function RootLayout({
