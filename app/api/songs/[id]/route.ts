@@ -3,92 +3,92 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
 async function checkUserAuth() {
-  const session = await auth()
-  
-  if (!session?.user?.email) {
-    return { authorized: false, user: null }
-  }
+	const session = await auth()
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email }
-  })
+	if (!session?.user?.email) {
+		return { authorized: false, user: null }
+	}
 
-  if (!user) {
-    return { authorized: false, user: null }
-  }
+	const user = await prisma.user.findUnique({
+		where: { email: session.user.email }
+	})
 
-  return { authorized: true, user }
+	if (!user) {
+		return { authorized: false, user: null }
+	}
+
+	return { authorized: true, user }
 }
 
 export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	req: NextRequest,
+	{ params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { authorized } = await checkUserAuth()
-    
-    if (!authorized) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+	try {
+		const { authorized } = await checkUserAuth()
 
-    const { title, key, tempo } = await req.json()
+		if (!authorized) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
 
-    if (!title) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      )
-    }
+		const { title, key, tempo } = await req.json()
 
-    const { id } = await params
-    const song = await prisma.song.update({
-      where: { id },
-      data: {
-        title,
-        key: key || null,
-        tempo: tempo || null
-      },
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      }
-    })
+		if (!title) {
+			return NextResponse.json(
+				{ error: "Title is required" },
+				{ status: 400 }
+			)
+		}
 
-    return NextResponse.json(song)
-  } catch (error) {
-    console.error("Error updating song:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
-  }
+		const { id } = await params
+		const song = await prisma.song.update({
+			where: { id },
+			data: {
+				title,
+				key: key || null,
+				tempo: tempo || null
+			},
+			include: {
+				user: {
+					select: {
+						name: true
+					}
+				}
+			}
+		})
+
+		return NextResponse.json(song)
+	} catch (error) {
+		console.error("Error updating song:", error)
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		)
+	}
 }
 
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	req: NextRequest,
+	{ params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { authorized } = await checkUserAuth()
-    
-    if (!authorized) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+	try {
+		const { authorized } = await checkUserAuth()
 
-    const { id } = await params
-    await prisma.song.delete({
-      where: { id }
-    })
+		if (!authorized) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
 
-    return NextResponse.json({ success: true })
-  } catch (error) {
-    console.error("Error deleting song:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
-  }
+		const { id } = await params
+		await prisma.song.delete({
+			where: { id }
+		})
+
+		return NextResponse.json({ success: true })
+	} catch (error) {
+		console.error("Error deleting song:", error)
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		)
+	}
 }

@@ -3,93 +3,93 @@ import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
 async function checkUserAuth() {
-  const session = await auth()
-  
-  if (!session?.user?.email) {
-    return { authorized: false, user: null }
-  }
+	const session = await auth()
 
-  const user = await prisma.user.findUnique({
-    where: { email: session.user.email }
-  })
+	if (!session?.user?.email) {
+		return { authorized: false, user: null }
+	}
 
-  if (!user) {
-    return { authorized: false, user: null }
-  }
+	const user = await prisma.user.findUnique({
+		where: { email: session.user.email }
+	})
 
-  return { authorized: true, user }
+	if (!user) {
+		return { authorized: false, user: null }
+	}
+
+	return { authorized: true, user }
 }
 
 export async function GET() {
-  try {
-    const { authorized } = await checkUserAuth()
-    
-    if (!authorized) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+	try {
+		const { authorized } = await checkUserAuth()
 
-    const songs = await prisma.song.findMany({
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      },
-      orderBy: {
-        title: 'asc'
-      }
-    })
+		if (!authorized) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
 
-    return NextResponse.json(songs)
-  } catch (error) {
-    console.error("Error fetching songs:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
-  }
+		const songs = await prisma.song.findMany({
+			include: {
+				user: {
+					select: {
+						name: true
+					}
+				}
+			},
+			orderBy: {
+				title: 'asc'
+			}
+		})
+
+		return NextResponse.json(songs)
+	} catch (error) {
+		console.error("Error fetching songs:", error)
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		)
+	}
 }
 
 export async function POST(req: NextRequest) {
-  try {
-    const { authorized, user } = await checkUserAuth()
-    
-    if (!authorized) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+	try {
+		const { authorized, user } = await checkUserAuth()
 
-    const { title, key, tempo } = await req.json()
+		if (!authorized) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
 
-    if (!title) {
-      return NextResponse.json(
-        { error: "Title is required" },
-        { status: 400 }
-      )
-    }
+		const { title, key, tempo } = await req.json()
 
-    const song = await prisma.song.create({
-      data: {
-        title,
-        key: key || null,
-        tempo: tempo || null,
-        createdBy: user!.id
-      },
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      }
-    })
+		if (!title) {
+			return NextResponse.json(
+				{ error: "Title is required" },
+				{ status: 400 }
+			)
+		}
 
-    return NextResponse.json(song, { status: 201 })
-  } catch (error) {
-    console.error("Error creating song:", error)
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    )
-  }
+		const song = await prisma.song.create({
+			data: {
+				title,
+				key: key || null,
+				tempo: tempo || null,
+				createdBy: user!.id
+			},
+			include: {
+				user: {
+					select: {
+						name: true
+					}
+				}
+			}
+		})
+
+		return NextResponse.json(song, { status: 201 })
+	} catch (error) {
+		console.error("Error creating song:", error)
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		)
+	}
 }

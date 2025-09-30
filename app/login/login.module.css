@@ -1,78 +1,78 @@
 .container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--background);
-  padding: 20px;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--background);
+	padding: 20px;
 }
 
 .loginBox {
-  background-color: white;
-  border-radius: 5px;
-  padding: 48px 40px;
-  width: 100%;
-  max-width: 420px;
-  border: 1px solid var(--border);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+	background-color: white;
+	border-radius: 5px;
+	padding: 48px 40px;
+	width: 100%;
+	max-width: 420px;
+	border: 1px solid var(--border);
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
 }
 
 .title {
-  font-size: 28px;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 8px;
-  color: var(--text);
+	font-size: 28px;
+	font-weight: 700;
+	text-align: center;
+	margin-bottom: 8px;
+	color: var(--text);
 }
 
 .subtitle {
-  text-align: center;
-  color: var(--text-secondary);
-  margin-bottom: 30px;
-  font-size: 14px;
+	text-align: center;
+	color: var(--text-secondary);
+	margin-bottom: 30px;
+	font-size: 14px;
 }
 
 .form {
-  margin-top: 24px;
+	margin-top: 24px;
 }
 
 .googleButton {
-  width: 100%;
-  padding: 12px 20px;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  background-color: white;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  cursor: pointer;
-  transition: all 0.15s ease;
+	width: 100%;
+	padding: 12px 20px;
+	border: 1px solid var(--border);
+	border-radius: 5px;
+	background-color: white;
+	color: var(--text);
+	font-size: 14px;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	cursor: pointer;
+	transition: all 0.15s ease;
 }
 
 .googleButton:hover {
-  border-color: var(--text);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+	border-color: var(--text);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .googleButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
 }
 
 .googleIcon {
-  width: 20px;
-  height: 20px;
+	width: 20px;
+	height: 20px;
 }
 
 .helpText {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 13px;
-  margin-top: 20px;
-  line-height: 1.4;
+	text-align: center;
+	color: var(--text-secondary);
+	font-size: 13px;
+	margin-top: 20px;
+	line-height: 1.4;
 }

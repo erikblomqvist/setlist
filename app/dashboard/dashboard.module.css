@@ -1,175 +1,188 @@
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 32px;
 }
 
 .title {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--text);
+	font-size: 32px;
+	font-weight: 700;
+	color: var(--text);
 }
 
 .loading {
-  text-align: center;
-  padding: 60px;
-  color: var(--text-secondary);
+	text-align: center;
+	padding: 60px;
+	color: var(--text-secondary);
 }
 
 .empty {
-  text-align: center;
-  padding: 80px 20px;
-  color: var(--text-secondary);
-  background-color: white;
-  border-radius: 5px;
-  border: 1px dashed var(--border);
+	text-align: center;
+	padding: 80px 20px;
+	color: var(--text-secondary);
+	background-color: white;
+	border-radius: 5px;
+	border: 1px dashed var(--border);
 }
 
 .filterSection {
-  background-color: white;
-  border-radius: 5px;
-  padding: 20px;
-  margin-bottom: 32px;
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	background-color: white;
+	border-radius: 5px;
+	padding: 20px;
+	margin-bottom: 32px;
+	border: 1px solid var(--border);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .filterTitle {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: var(--text);
+	font-size: 14px;
+	font-weight: 600;
+	margin-bottom: 12px;
+	color: var(--text);
 }
 
 .filterChips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
 }
 
 .filterChip {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background-color: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  color: var(--text-secondary);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	background-color: white;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	color: var(--text-secondary);
 }
 
 .filterChip:hover {
-  border-color: var(--text);
-  color: var(--text);
+	border-color: var(--text);
+	color: var(--text);
 }
 
 .filterChipActive {
-  border-color: var(--text);
-  background-color: var(--background);
-  color: var(--text);
+	border-color: var(--text);
+	background-color: var(--background);
+	color: var(--text);
 }
 
 .chipColor {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	border: 1px solid var(--border);
 }
 
 .filterClear {
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background-color: white;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  color: var(--danger);
+	padding: 8px 16px;
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	background-color: white;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	color: var(--danger);
 }
 
 .filterClear:hover {
-  background-color: var(--danger);
-  color: white;
-  border-color: var(--danger);
+	background-color: var(--danger);
+	color: white;
+	border-color: var(--danger);
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 24px;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+	gap: 24px;
 }
 
 .card {
-  background-color: white;
-  border-radius: 5px;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: all 0.15s ease;
-  border: 1px solid var(--border);
+	background-color: white;
+	border-radius: 5px;
+	padding: 24px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	transition: all 0.15s ease;
+	border: 1px solid var(--border);
 }
 
 .card:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .cardCategories {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 12px;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-bottom: 12px;
 }
 
 .categoryBadge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  border: 1px solid var(--border);
-  color: var(--text);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 4px 10px;
+
+	font-size: 12px;
+	font-weight: 500;
+	color: var(--text);
 }
 
 .cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 12px;
-  gap: 12px;
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 12px;
+	gap: 12px;
 }
 
 .cardTitle {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--text);
-  flex: 1;
+	font-size: 20px;
+	font-weight: 600;
+	color: var(--text);
+	flex: 1;
+
+	a {
+		color: var(--text);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
 }
 
 .badge {
-  background-color: var(--text);
-  color: white;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
+	border-radius: 12px;
+	padding: 4px 10px;
+	background-color: var(--text);
+
+	transform: translateY(2px);
+
+	white-space: nowrap;
+	font-size: 12px;
+	font-weight: 500;
+	color: white;
 }
 
 .cardMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  color: var(--text-secondary);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 20px;
+	font-size: 14px;
+	color: var(--text-secondary);
 }
 
 .cardActions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
 }
