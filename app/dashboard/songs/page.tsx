@@ -1,0 +1,240 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import styles from "./songs.module.css"
+
+interface Song {
+  id: string
+  title: string
+  key: string | null
+  tempo: string | null
+  user: {
+    name: string
+  }
+}
+
+export default function SongsPage() {
+  const [songs, setSongs] = useState<Song[]>([])
+  const [loading, setLoading] = useState(true)
+  const [showForm, setShowForm] = useState(false)
+  const [editingSong, setEditingSong] = useState<Song | null>(null)
+  const [formData, setFormData] = useState({ title: "", key: "", tempo: "" })
+
+  useEffect(() => {
+    fetchSongs()
+  }, [])
+
+  const fetchSongs = async () => {
+    try {
+      const res = await fetch("/api/songs")
+      if (res.ok) {
+        const data = await res.json()
+        setSongs(data)
+      }
+    } catch (error) {
+      console.error("Error fetching songs:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      const url = editingSong ? `/api/songs/${editingSong.id}` : "/api/songs"
+      const method = editingSong ? "PUT" : "POST"
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      if (res.ok) {
+        fetchSongs()
+        setShowForm(false)
+        setEditingSong(null)
+        setFormData({ title: "", key: "", tempo: "" })
+      }
+    } catch (error) {
+      console.error("Error saving song:", error)
+    }
+  }
+
+  const handleEdit = (song: Song) => {
+    setEditingSong(song)
+    setFormData({
+      title: song.title,
+      key: song.key || "",
+      tempo: song.tempo || "",
+    })
+    setShowForm(true)
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this song?")) return
+
+    try {
+      const res = await fetch(`/api/songs/${id}`, {
+        method: "DELETE",
+      })
+
+      if (res.ok) {
+        setSongs(songs.filter((s) => s.id !== id))
+      }
+    } catch (error) {
+      console.error("Error deleting song:", error)
+    }
+  }
+
+  const handleCancel = () => {
+    setShowForm(false)
+    setEditingSong(null)
+    setFormData({ title: "", key: "", tempo: "" })
+  }
+
+  if (loading) {
+    return <div className={styles.loading}>Loading songs...</div>
+  }
+
+  return (
+    <div>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Songs</h1>
+        {!showForm && (
+          <button onClick={() => setShowForm(true)} className="btn btn-primary">
+            + Add Song
+          </button>
+        )}
+      </div>
+
+      {showForm && (
+        <div className={styles.formCard}>
+          <h2 className={styles.formTitle}>
+            {editingSong ? "Edit Song" : "Add New Song"}
+          </h2>
+          <form onSubmit={handleSubmit}>
+            <div className={styles.formRow}>
+              <div className="form-group" style={{ flex: 2 }}>
+                <label htmlFor="title" className="form-label">
+                  Title *
+                </label>
+                <input
+                  id="title"
+                  type="text"
+                  className="form-input"
+                  value={formData.title}
+                  onChange={(e) =>
+                    setFormData({ ...formData, title: e.target.value })
+                  }
+                  required
+                />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="key" className="form-label">
+                  Key
+                </label>
+                <input
+                  id="key"
+                  type="text"
+                  className="form-input"
+                  value={formData.key}
+                  onChange={(e) =>
+                    setFormData({ ...formData, key: e.target.value })
+                  }
+                  placeholder="e.g., C, Am, G"
+                />
+              </div>
+              <div className="form-group" style={{ flex: 1 }}>
+                <label htmlFor="tempo" className="form-label">
+                  Tempo
+                </label>
+                <input
+                  id="tempo"
+                  type="text"
+                  className="form-input"
+                  value={formData.tempo}
+                  onChange={(e) =>
+                    setFormData({ ...formData, tempo: e.target.value })
+                  }
+                  placeholder="e.g., 120 BPM"
+                />
+              </div>
+            </div>
+            <div className={styles.formActions}>
+              <button type="submit" className="btn btn-primary">
+                {editingSong ? "Update Song" : "Add Song"}
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="btn btn-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {songs.length === 0 ? (
+        <div className={styles.empty}>
+          <p>No songs yet. Add your first one!</p>
+        </div>
+      ) : (
+        <div className={styles.table}>
+          <div className={styles.tableHeader}>
+            <div className={styles.tableCell} style={{ flex: 2 }}>
+              Title
+            </div>
+            <div className={styles.tableCell} style={{ flex: 1 }}>
+              Key
+            </div>
+            <div className={styles.tableCell} style={{ flex: 1 }}>
+              Tempo
+            </div>
+            <div className={styles.tableCell} style={{ flex: 1 }}>
+              Created By
+            </div>
+            <div className={styles.tableCell} style={{ flex: 1 }}>
+              Actions
+            </div>
+          </div>
+          {songs.map((song) => (
+            <div key={song.id} className={styles.tableRow}>
+              <div className={styles.tableCell} style={{ flex: 2 }}>
+                <strong>{song.title}</strong>
+              </div>
+              <div className={styles.tableCell} style={{ flex: 1 }}>
+                {song.key || "-"}
+              </div>
+              <div className={styles.tableCell} style={{ flex: 1 }}>
+                {song.tempo || "-"}
+              </div>
+              <div className={styles.tableCell} style={{ flex: 1 }}>
+                {song.user.name}
+              </div>
+              <div className={styles.tableCell} style={{ flex: 1 }}>
+                <div className={styles.actions}>
+                  <button
+                    onClick={() => handleEdit(song)}
+                    className="btn btn-small btn-secondary"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(song.id)}
+                    className="btn btn-small btn-danger"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}

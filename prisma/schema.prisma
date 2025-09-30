@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("user") // "admin" or "user"
+  createdAt DateTime @default(now())
+  
+  songs     Song[]
+  setlists  Setlist[]
+}
+
+model Song {
+  id        String   @id @default(cuid())
+  title     String
+  key       String?
+  tempo     String?
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  user      User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  setlistSongs SetlistSong[]
+  
+  @@index([createdBy])
+}
+
+model Setlist {
+  id           String   @id @default(cuid())
+  name         String
+  numberOfSets Int      @default(1)
+  createdBy    String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  user         User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  songs        SetlistSong[]
+  
+  @@index([createdBy])
+}
+
+model SetlistSong {
+  id              String   @id @default(cuid())
+  setlistId       String
+  songId          String
+  setNumber       Int      @default(1)
+  position        Int
+  comments        String?
+  backgroundColor String?  // Will store color names like "blue", "green", etc.
+  createdAt       DateTime @default(now())
+  
+  setlist         Setlist  @relation(fields: [setlistId], references: [id], onDelete: Cascade)
+  song            Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  
+  @@unique([setlistId, songId])
+  @@index([setlistId])
+  @@index([songId])
+}

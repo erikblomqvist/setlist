@@ -1,0 +1,100 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-secondary);
+}
+
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--text-secondary);
+  background-color: var(--surface);
+  border-radius: 12px;
+  border: 2px dashed var(--border);
+}
+
+.formCard {
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+}
+
+.formTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.formRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+}
+
+.table {
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+}
+
+.tableHeader {
+  display: flex;
+  background-color: var(--surface);
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+}
+
+.tableRow {
+  display: flex;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.tableRow:hover {
+  background-color: var(--surface);
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+.tableCell {
+  padding-right: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
