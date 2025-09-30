@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
+import { minToHours } from "@/app/utils/min-to-hours"
 import styles from "./view.module.css"
 
 interface Song {
@@ -119,7 +120,7 @@ export default function ViewSetlistPage({
 								<span> • </span>
 							</>
 						)}
-						Created by {setlist.user.name} • {setlist.songs.length} songs
+						Created by {setlist.user.name} • {setlist.songs.length} songs ({minToHours(setlist.songs.length * 3)})
 					</p>
 				</div>
 				<div className={styles.actions}>
@@ -144,7 +145,7 @@ export default function ViewSetlistPage({
 								<h2 className={styles.setTitle}>
 									Set {setNumber}
 									<span className={styles.songCount}>
-										{songs.length} {songs.length === 1 ? "song" : "songs"}
+										{songs.length} {songs.length === 1 ? "song" : "songs"} ({minToHours(songs.length * 3)})
 									</span>
 								</h2>
 								{songs.length === 0 ? (
@@ -182,7 +183,7 @@ export default function ViewSetlistPage({
 													</div>
 													{setlistSong.comments && (
 														<div className={styles.comments}>
-															💬 {setlistSong.comments}
+															{setlistSong.comments}
 														</div>
 													)}
 												</div>

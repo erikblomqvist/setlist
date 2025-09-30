@@ -88,10 +88,13 @@
 
 .songItem {
 	display: flex;
+	align-items: center;
 	gap: 16px;
-	padding: 16px;
+
 	border-radius: 8px;
 	border: 1px solid var(--border);
+	padding: 16px;
+
 	transition: all 0.2s;
 }
 
@@ -118,7 +121,6 @@
 	justify-content: space-between;
 	align-items: baseline;
 	gap: 16px;
-	margin-bottom: 4px;
 
 	@media (max-width: 480px) {
 		flex-direction: column;
