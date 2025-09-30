@@ -3,17 +3,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-color: var(--background);
   padding: 20px;
 }
 
 .loginBox {
   background-color: white;
-  border-radius: 12px;
-  padding: 40px;
+  border-radius: 5px;
+  padding: 48px 40px;
   width: 100%;
   max-width: 420px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
 }
 
 .title {
@@ -38,24 +39,23 @@
 .googleButton {
   width: 100%;
   padding: 12px 20px;
-  border: 1px solid #dadce0;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
   background-color: white;
-  color: #3c4043;
-  font-size: 16px;
+  color: var(--text);
+  font-size: 14px;
   font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
 }
 
 .googleButton:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  transform: translateY(-1px);
+  border-color: var(--text);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .googleButton:disabled {

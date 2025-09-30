@@ -37,6 +37,12 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
             >
               Songs
             </Link>
+            <Link
+              href="/dashboard/categories"
+              className={pathname === "/dashboard/categories" ? styles.linkActive : styles.link}
+            >
+              Categories
+            </Link>
             {userRole === "admin" && (
               <Link
                 href="/dashboard/users"

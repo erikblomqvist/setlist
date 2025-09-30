@@ -48,6 +48,13 @@ export async function GET(
             { setNumber: 'asc' },
             { position: 'asc' }
           ]
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            color: true
+          }
         }
       }
     })
@@ -81,14 +88,17 @@ export async function PUT(
     }
 
     const { id } = await params
-    const { name, numberOfSets, songs } = await req.json()
+    const { name, numberOfSets, songs, categoryIds } = await req.json()
 
     // Update setlist basic info
     const setlist = await prisma.setlist.update({
       where: { id },
       data: {
         name,
-        numberOfSets
+        numberOfSets,
+        categories: categoryIds !== undefined ? {
+          set: categoryIds.map((catId: string) => ({ id: catId }))
+        } : undefined
       }
     })
 
@@ -131,6 +141,13 @@ export async function PUT(
             { setNumber: 'asc' },
             { position: 'asc' }
           ]
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            color: true
+          }
         }
       }
     })

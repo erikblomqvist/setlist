@@ -43,6 +43,13 @@ export async function GET() {
             { setNumber: 'asc' },
             { position: 'asc' }
           ]
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            color: true
+          }
         }
       },
       orderBy: {
@@ -68,7 +75,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const { name, numberOfSets } = await req.json()
+    const { name, numberOfSets, categoryIds } = await req.json()
 
     if (!name) {
       return NextResponse.json(
@@ -81,7 +88,10 @@ export async function POST(req: NextRequest) {
       data: {
         name,
         numberOfSets: numberOfSets || 1,
-        createdBy: user!.id
+        createdBy: user!.id,
+        categories: categoryIds && categoryIds.length > 0 ? {
+          connect: categoryIds.map((id: string) => ({ id }))
+        } : undefined
       },
       include: {
         user: {
@@ -92,6 +102,13 @@ export async function POST(req: NextRequest) {
         songs: {
           include: {
             song: true
+          }
+        },
+        categories: {
+          select: {
+            id: true,
+            name: true,
+            color: true
           }
         }
       }

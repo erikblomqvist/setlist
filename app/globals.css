@@ -5,24 +5,27 @@
 }
 
 :root {
-  --primary: #2563eb;
-  --primary-dark: #1e40af;
-  --secondary: #64748b;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
-  --background: #ffffff;
-  --surface: #f8fafc;
-  --border: #e2e8f0;
-  --text: #1e293b;
-  --text-secondary: #64748b;
+  /* Vercel-inspired color scheme */
+  --primary: #000000;
+  --primary-hover: #1a1a1a;
+  --secondary: #666666;
+  --secondary-hover: #444444;
+  --success: #0070f3;
+  --danger: #e00;
+  --warning: #f5a623;
+  --background: #fafafa;
+  --surface: #ffffff;
+  --border: #eaeaea;
+  --text: #000000;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
   
-  /* Predefined colors for setlist songs */
-  --color-red: #fecaca;
-  --color-blue: #bfdbfe;
-  --color-green: #bbf7d0;
-  --color-yellow: #fde047;
-  --color-purple: #e9d5ff;
+  /* Predefined colors for setlist songs - adjusted for better contrast */
+  --color-red: #ffe5e5;
+  --color-blue: #e0f2fe;
+  --color-green: #d1fae5;
+  --color-yellow: #fef3c7;
+  --color-purple: #f3e8ff;
 }
 
 body {
@@ -59,37 +62,44 @@ input, textarea, select {
 
 .btn {
   padding: 10px 20px;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid transparent;
+  border-radius: 5px;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
 .btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
 }
 
 .btn:active {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 .btn-primary {
   background-color: var(--primary);
   color: white;
+  border-color: var(--primary);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .btn-secondary {
-  background-color: var(--secondary);
-  color: white;
+  background-color: transparent;
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--surface);
+  border-color: var(--text);
 }
 
 .btn-danger {
@@ -135,7 +145,7 @@ input, textarea, select {
 .form-textarea:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
 .form-textarea {
@@ -145,9 +155,10 @@ input, textarea, select {
 
 .card {
   background-color: white;
-  border-radius: 8px;
+  border-radius: 5px;
   padding: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
 .error-message {

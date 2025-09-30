@@ -44,10 +44,21 @@ model Setlist {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
-  user         User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  user         User        @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   songs        SetlistSong[]
+  categories   Category[]
   
   @@index([createdBy])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  color     String   // Will store color names like "red", "blue", etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  setlists  Setlist[]
 }
 
 model SetlistSong {

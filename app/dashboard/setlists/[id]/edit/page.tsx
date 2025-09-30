@@ -21,11 +21,18 @@ interface SetlistSong {
   song: Song
 }
 
+interface Category {
+  id: string
+  name: string
+  color: string
+}
+
 interface Setlist {
   id: string
   name: string
   numberOfSets: number
   songs: SetlistSong[]
+  categories: Category[]
 }
 
 const COLORS = [
@@ -36,6 +43,19 @@ const COLORS = [
   { name: "purple", label: "Purple", value: "var(--color-purple)" },
 ]
 
+const CATEGORY_COLORS: { [key: string]: string } = {
+  red: '#fee2e2',
+  orange: '#ffedd5',
+  yellow: '#fef3c7',
+  green: '#d1fae5',
+  teal: '#ccfbf1',
+  blue: '#dbeafe',
+  indigo: '#e0e7ff',
+  purple: '#f3e8ff',
+  pink: '#fce7f3',
+  gray: '#f3f4f6',
+}
+
 export default function EditSetlistPage({
   params,
 }: {
@@ -44,6 +64,8 @@ export default function EditSetlistPage({
   const router = useRouter()
   const [setlist, setSetlist] = useState<Setlist | null>(null)
   const [allSongs, setAllSongs] = useState<Song[]>([])
+  const [allCategories, setAllCategories] = useState<Category[]>([])
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
   const [setlistSongs, setSetlistSongs] = useState<SetlistSong[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -62,7 +84,7 @@ export default function EditSetlistPage({
 
   useEffect(() => {
     if (setlistId) {
-      Promise.all([fetchSetlist(), fetchSongs()])
+      Promise.all([fetchSetlist(), fetchSongs(), fetchCategories()])
     }
   }, [setlistId])
 
@@ -76,6 +98,7 @@ export default function EditSetlistPage({
         setSetlist(data)
         setSetlistSongs(data.songs || [])
         setFormData({ name: data.name, numberOfSets: data.numberOfSets })
+        setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
       }
     } catch (error) {
       console.error("Error fetching setlist:", error)
@@ -94,6 +117,30 @@ export default function EditSetlistPage({
     } catch (error) {
       console.error("Error fetching songs:", error)
     }
+  }
+
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch("/api/categories")
+      if (res.ok) {
+        const data = await res.json()
+        setAllCategories(data)
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error)
+    }
+  }
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategoryIds(prev =>
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    )
+  }
+
+  const getCategoryColorValue = (colorName: string) => {
+    return CATEGORY_COLORS[colorName] || '#f3f4f6'
   }
 
   const filteredSongs = allSongs.filter(
@@ -226,6 +273,7 @@ export default function EditSetlistPage({
           name: formData.name,
           numberOfSets: formData.numberOfSets,
           songs: songsData,
+          categoryIds: selectedCategoryIds,
         }),
       })
 
@@ -306,6 +354,29 @@ export default function EditSetlistPage({
         </div>
       </div>
 
+      {allCategories.length > 0 && (
+        <div className={styles.categorySection}>
+          <label className="form-label">Categories</label>
+          <div className={styles.categoryGrid}>
+            {allCategories.map((category) => (
+              <div
+                key={category.id}
+                className={`${styles.categoryOption} ${
+                  selectedCategoryIds.includes(category.id) ? styles.categoryOptionSelected : ''
+                }`}
+                onClick={() => toggleCategory(category.id)}
+              >
+                <div
+                  className={styles.categorySwatch}
+                  style={{ backgroundColor: getCategoryColorValue(category.color) }}
+                />
+                <span className={styles.categoryLabel}>{category.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className={styles.addSongSection}>
         <div className={styles.autocompleteWrapper}>
           <input
@@ -323,7 +394,16 @@ export default function EditSetlistPage({
           {showAutocomplete && searchTerm && filteredSongs.length > 0 && (
             <div className={styles.autocomplete}>
               {filteredSongs.slice(0, 5).map((song) => (
-                <div key={song.id} className={styles.autocompleteItem}>
+                <div 
+                  key={song.id} 
+                  className={`${styles.autocompleteItem} ${formData.numberOfSets === 1 ? styles.clickable : ''}`}
+                  onMouseDown={(e) => {
+                    if (formData.numberOfSets === 1) {
+                      e.preventDefault()
+                      addSongToSet(song, 1)
+                    }
+                  }}
+                >
                   <div className={styles.songInfo}>
                     <strong>{song.title}</strong>
                     <span>
@@ -332,20 +412,25 @@ export default function EditSetlistPage({
                       {song.tempo && `Tempo: ${song.tempo}`}
                     </span>
                   </div>
-                  <div className={styles.setButtons}>
-                    {Array.from(
-                      { length: formData.numberOfSets },
-                      (_, i) => i + 1
-                    ).map((setNum) => (
-                      <button
-                        key={setNum}
-                        onClick={() => addSongToSet(song, setNum)}
-                        className="btn btn-small btn-primary"
-                      >
-                        Set {setNum}
-                      </button>
-                    ))}
-                  </div>
+                  {formData.numberOfSets > 1 && (
+                    <div className={styles.setButtons}>
+                      {Array.from(
+                        { length: formData.numberOfSets },
+                        (_, i) => i + 1
+                      ).map((setNum) => (
+                        <button
+                          key={setNum}
+                          onMouseDown={(e) => {
+                            e.preventDefault()
+                            addSongToSet(song, setNum)
+                          }}
+                          className="btn btn-small btn-primary"
+                        >
+                          Set {setNum}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
