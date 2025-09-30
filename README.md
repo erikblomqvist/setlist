@@ -1,4 +1,4 @@
-# Setlist Manager 🎵
+# Nyléns Setlists 🎵
 
 A modern web application for managing band setlists, built with Next.js 15, Prisma, and NextAuth.
 
