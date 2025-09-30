@@ -16,6 +16,10 @@
   justify-content: space-between;
   align-items: center;
   height: 64px;
+
+  @media (max-width: 480px) {
+    padding-block: 12px;
+  }
 }
 
 .left {
@@ -51,9 +55,13 @@
 }
 
 .linkActive {
-  composes: link;
   color: var(--text);
   font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  padding: 8px 0;
+  transition: color 0.15s ease;
+  position: relative;
 }
 
 .right {
@@ -66,4 +74,74 @@
   font-size: 14px;
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+    height: auto;
+    min-height: 64px;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .left {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .links {
+    width: 100%;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .link,
+  .linkActive {
+    font-size: 13px;
+  }
+
+  .right {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+  }
+
+  .userName {
+    font-size: 13px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    font-size: 16px;
+  }
+
+  .links {
+    gap: 12px;
+  }
+
+  .link,
+  .linkActive {
+    font-size: 12px;
+    padding: 6px 0;
+  }
+
+  .userName {
+    max-width: 150px;
+  }
 }

@@ -4,6 +4,10 @@
   align-items: flex-start;
   margin-bottom: 32px;
   gap: 20px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 }
 
 .title {
@@ -107,9 +111,13 @@
 .songHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: baseline;
   gap: 16px;
   margin-bottom: 4px;
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+  }
 }
 
 .songTitle {
