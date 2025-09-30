@@ -24,12 +24,12 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 }
 
 export default function NewSetlistPage() {
-  const router = useRouter()
-  const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
-  const [categories, setCategories] = useState<Category[]>([])
-  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState("")
+	const router = useRouter()
+	const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
+	const [categories, setCategories] = useState<Category[]>([])
+	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
+	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState("")
 
 	useEffect(() => {
 		fetchCategories()
@@ -65,16 +65,16 @@ export default function NewSetlistPage() {
 		setLoading(true)
 
 		try {
-      const res = await fetch("/api/setlists", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          numberOfSets: formData.numberOfSets,
-          date: formData.date || null,
-          categoryIds: selectedCategoryIds
-        }),
-      })
+			const res = await fetch("/api/setlists", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: formData.name,
+					numberOfSets: formData.numberOfSets,
+					date: formData.date || null,
+					categoryIds: selectedCategoryIds
+				}),
+			})
 
 			if (res.ok) {
 				const setlist = await res.json()
@@ -92,14 +92,14 @@ export default function NewSetlistPage() {
 	return (
 		<div className={styles.container}>
 			<div className={styles.header}>
-				<h1 className={styles.title}>Create New Setlist</h1>
+				<h1 className={styles.title}>Skapa ny setlist</h1>
 			</div>
 
 			<div className={styles.card}>
 				<form onSubmit={handleSubmit}>
 					<div className="form-group">
 						<label htmlFor="name" className="form-label">
-							Setlist Name *
+							Setlist-namn *
 						</label>
 						<input
 							id="name"
@@ -110,49 +110,49 @@ export default function NewSetlistPage() {
 								setFormData({ ...formData, name: e.target.value })
 							}
 							required
-							placeholder="e.g., Summer Tour 2024"
+							placeholder="t.ex. Sommarturné 2024"
 						/>
 					</div>
 
-          <div className="form-group">
-            <label htmlFor="numberOfSets" className="form-label">
-              Number of Sets *
-            </label>
-            <input
-              id="numberOfSets"
-              type="number"
-              className="form-input"
-              value={formData.numberOfSets}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  numberOfSets: parseInt(e.target.value) || 1,
-                })
-              }
-              required
-              min="1"
-              max="10"
-            />
-          </div>
+					<div className="form-group">
+						<label htmlFor="numberOfSets" className="form-label">
+							Antal set *
+						</label>
+						<input
+							id="numberOfSets"
+							type="number"
+							className="form-input"
+							value={formData.numberOfSets}
+							onChange={(e) =>
+								setFormData({
+									...formData,
+									numberOfSets: parseInt(e.target.value) || 1,
+								})
+							}
+							required
+							min="1"
+							max="10"
+						/>
+					</div>
 
-          <div className="form-group">
-            <label htmlFor="date" className="form-label">
-              Date (optional)
-            </label>
-            <input
-              id="date"
-              type="date"
-              className="form-input"
-              value={formData.date}
-              onChange={(e) =>
-                setFormData({ ...formData, date: e.target.value })
-              }
-            />
-          </div>
+					<div className="form-group">
+						<label htmlFor="date" className="form-label">
+							Datum (valfritt)
+						</label>
+						<input
+							id="date"
+							type="date"
+							className="form-input"
+							value={formData.date}
+							onChange={(e) =>
+								setFormData({ ...formData, date: e.target.value })
+							}
+						/>
+					</div>
 
-          {categories.length > 0 && (
+					{categories.length > 0 && (
 						<div className="form-group">
-							<label className="form-label">Categories (optional)</label>
+							<label className="form-label">Kategorier (valfritt)</label>
 							<div className={styles.categoryGrid}>
 								{categories.map((category) => (
 									<div
@@ -176,14 +176,14 @@ export default function NewSetlistPage() {
 
 					<div className={styles.actions}>
 						<button type="submit" className="btn btn-primary" disabled={loading}>
-							{loading ? "Creating..." : "Create Setlist"}
+							{loading ? "Skapar…" : "Skapa setlist"}
 						</button>
 						<button
 							type="button"
 							onClick={() => router.push("/dashboard")}
 							className="btn btn-secondary"
 						>
-							Cancel
+							Avbryt
 						</button>
 					</div>
 				</form>

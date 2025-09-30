@@ -52,7 +52,7 @@ export default function UsersPage() {
 			const data = await res.json()
 
 			if (res.ok) {
-				setSuccess("User added successfully!")
+				setSuccess("Användare tillagd!")
 				fetchUsers()
 				setShowForm(false)
 				setFormData({ email: "", name: "", role: "user" })
@@ -71,16 +71,16 @@ export default function UsersPage() {
 	}
 
 	if (loading) {
-		return <div className={styles.loading}>Loading users...</div>
+		return <div className={styles.loading}>Laddar användare…</div>
 	}
 
 	return (
 		<div>
 			<div className={styles.header}>
-				<h1 className={styles.title}>Users</h1>
+				<h1 className={styles.title}>Användare</h1>
 				{!showForm && (
 					<button onClick={() => setShowForm(true)} className="btn btn-primary">
-						+ Add Band Member
+						+ Lägg till bandmedlem
 					</button>
 				)}
 			</div>
@@ -91,11 +91,11 @@ export default function UsersPage() {
 
 			{showForm && (
 				<div className={styles.formCard}>
-					<h2 className={styles.formTitle}>Add Band Member</h2>
+					<h2 className={styles.formTitle}>Lägg till bandmedlem</h2>
 					<form onSubmit={handleSubmit}>
 						<div className="form-group">
 							<label htmlFor="name" className="form-label">
-								Name *
+								Namn *
 							</label>
 							<input
 								id="name"
@@ -106,12 +106,12 @@ export default function UsersPage() {
 									setFormData({ ...formData, name: e.target.value })
 								}
 								required
-								placeholder="e.g., John Smith"
+								placeholder="t.ex. Lennart"
 							/>
 						</div>
 						<div className="form-group">
 							<label htmlFor="email" className="form-label">
-								Gmail Address *
+								Gmail-adress *
 							</label>
 							<input
 								id="email"
@@ -122,12 +122,12 @@ export default function UsersPage() {
 									setFormData({ ...formData, email: e.target.value })
 								}
 								required
-								placeholder="e.g., john@gmail.com"
+								placeholder="t.ex. lennart@gmail.com"
 							/>
 						</div>
 						<div className="form-group">
 							<label htmlFor="role" className="form-label">
-								Role
+								Roll
 							</label>
 							<select
 								id="role"
@@ -137,11 +137,11 @@ export default function UsersPage() {
 									setFormData({ ...formData, role: e.target.value })
 								}
 							>
-								<option value="user">Regular User</option>
+								<option value="user">Vanlig användare</option>
 								<option value="admin">Admin</option>
 							</select>
 							<small style={{ color: "var(--text-secondary)", fontSize: "13px" }}>
-								Admins can manage other users
+								Admins kan hantera andra användare
 							</small>
 						</div>
 
@@ -149,14 +149,14 @@ export default function UsersPage() {
 
 						<div className={styles.formActions}>
 							<button type="submit" className="btn btn-primary">
-								Add Member
+								Lägg till medlem
 							</button>
 							<button
 								type="button"
 								onClick={handleCancel}
 								className="btn btn-secondary"
 							>
-								Cancel
+								Avbryt
 							</button>
 						</div>
 					</form>
@@ -166,16 +166,16 @@ export default function UsersPage() {
 			<div className={styles.table}>
 				<div className={styles.tableHeader}>
 					<div className={styles.tableCell} style={{ flex: 2 }}>
-						Name
+						Namn
 					</div>
 					<div className={styles.tableCell} style={{ flex: 2 }}>
-						Gmail Address
+						Gmail-adress
 					</div>
 					<div className={styles.tableCell} style={{ flex: 1 }}>
-						Role
+						Roll
 					</div>
 					<div className={styles.tableCell} style={{ flex: 1 }}>
-						Added
+						Skapad
 					</div>
 				</div>
 				{users.map((user) => (

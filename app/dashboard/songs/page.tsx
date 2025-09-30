@@ -70,12 +70,12 @@ export default function SongsPage() {
 
 				if (editingSong) {
 					// If editing, close the form and show success message
-					toast.success(`"${formData.title}" updated successfully!`)
+					toast.success(`"${formData.title}" uppdaterades!`)
 					setShowForm(false)
 					setEditingSong(null)
 				} else {
 					// If adding, show success message and keep form open
-					toast.success(`"${formData.title}" added successfully!`)
+					toast.success(`"${formData.title}" tillagd!`)
 				}
 
 				// Always reset form data (for both add and edit)
@@ -86,11 +86,11 @@ export default function SongsPage() {
 					titleInputRef.current.focus()
 				}
 			} else {
-				toast.error("Failed to save song. Please try again.")
+				toast.error("Gick inte att spara låten. Försök igen.")
 			}
 		} catch (error) {
 			console.error("Error saving song:", error)
-			toast.error("An error occurred. Please try again.")
+			toast.error("Ett fel uppstod. Försök igen.")
 		}
 	}
 
@@ -106,7 +106,7 @@ export default function SongsPage() {
 
 	const handleDelete = async (id: string) => {
 		const songToDelete = songs.find((s) => s.id === id)
-		if (!confirm("Are you sure you want to delete this song?")) return
+		if (!confirm("Är du säker på att du vill ta bort denna låt?")) return
 
 		try {
 			const res = await fetch(`/api/songs/${id}`, {
@@ -115,13 +115,13 @@ export default function SongsPage() {
 
 			if (res.ok) {
 				setSongs(songs.filter((s) => s.id !== id))
-				toast.success(`"${songToDelete?.title}" deleted successfully!`)
+				toast.success(`"${songToDelete?.title}" togs bort!`)
 			} else {
-				toast.error("Failed to delete song. Please try again.")
+				toast.error("Gick inte att ta bort låten. Försök igen.")
 			}
 		} catch (error) {
 			console.error("Error deleting song:", error)
-			toast.error("An error occurred. Please try again.")
+			toast.error("Ett fel uppstod. Försök igen.")
 		}
 	}
 
@@ -182,16 +182,16 @@ export default function SongsPage() {
 	})
 
 	if (loading) {
-		return <div className={styles.loading}>Loading songs...</div>
+		return <div className={styles.loading}>Laddar låtar…</div>
 	}
 
 	return (
 		<div>
 			<div className={styles.header}>
-				<h1 className={styles.title}>Songs</h1>
+				<h1 className={styles.title}>Låtar</h1>
 				{!showForm && (
 					<button onClick={() => setShowForm(true)} className="btn btn-primary">
-						+ Add Song
+						+ Lägg till låt
 					</button>
 				)}
 			</div>
@@ -199,13 +199,13 @@ export default function SongsPage() {
 			{showForm && (
 				<div className={styles.formCard}>
 					<h2 className={styles.formTitle}>
-						{editingSong ? "Edit Song" : "Add New Song"}
+						{editingSong ? "Redigera låt" : "Lägg till ny låt"}
 					</h2>
 					<form onSubmit={handleSubmit}>
 						<div className={styles.formRow}>
 							<div className="form-group" style={{ flex: 2 }}>
 								<label htmlFor="title" className="form-label">
-									Title *
+									Titel *
 								</label>
 								<input
 									ref={titleInputRef}
@@ -221,7 +221,7 @@ export default function SongsPage() {
 							</div>
 							<div className="form-group" style={{ flex: 1 }}>
 								<label htmlFor="key" className="form-label">
-									Key
+									Tonart
 								</label>
 								<input
 									id="key"
@@ -231,7 +231,7 @@ export default function SongsPage() {
 									onChange={(e) =>
 										setFormData({ ...formData, key: e.target.value })
 									}
-									placeholder="e.g., C, Am, G"
+									placeholder="t.ex. C, Am, G"
 								/>
 							</div>
 							<div className="form-group" style={{ flex: 1 }}>
@@ -246,20 +246,20 @@ export default function SongsPage() {
 									onChange={(e) =>
 										setFormData({ ...formData, tempo: e.target.value })
 									}
-									placeholder="e.g., 120 BPM"
+									placeholder="t.ex. 120 (BPM)"
 								/>
 							</div>
 						</div>
 						<div className={styles.formActions}>
 							<button type="submit" className="btn btn-primary">
-								{editingSong ? "Update Song" : "Add Song"}
+								{editingSong ? "Uppdatera låt" : "Lägg till låt"}
 							</button>
 							<button
 								type="button"
 								onClick={handleCancel}
 								className="btn btn-secondary"
 							>
-								Cancel
+								Avbryt
 							</button>
 						</div>
 					</form>
@@ -268,7 +268,7 @@ export default function SongsPage() {
 
 			{songs.length === 0 ? (
 				<div className={styles.empty}>
-					<p>No songs yet. Add your first one!</p>
+					<p>Inga låtar ännu. Lägg till din första!</p>
 				</div>
 			) : (
 				<div className={styles.table}>
@@ -278,31 +278,31 @@ export default function SongsPage() {
 							style={{ flex: 2 }}
 							onClick={() => handleSort('title')}
 						>
-							Title {sortField === 'title' && (sortDirection === 'asc' ? '↑' : '↓')}
+							Titel {sortField === 'title' && (sortDirection === 'asc' ? '↑' : '↓')}
 						</div>
 						<div
 							className={`${styles.tableCell} ${styles.sortable}`}
 							style={{ flex: 1 }}
 							onClick={() => handleSort('key')}
 						>
-							Key {sortField === 'key' && (sortDirection === 'asc' ? '↑' : '↓')}
+							Tonart {sortField === 'key' && (sortDirection === 'asc' ? '↑' : '↓')}
 						</div>
 						<div
 							className={`${styles.tableCell} ${styles.sortable}`}
 							style={{ flex: 1 }}
 							onClick={() => handleSort('tempo')}
 						>
-							Tempo {sortField === 'tempo' && (sortDirection === 'asc' ? '↑' : '↓')}
+							Tempo (BPM) {sortField === 'tempo' && (sortDirection === 'asc' ? '↑' : '↓')}
 						</div>
 						<div
 							className={`${styles.tableCell} ${styles.sortable}`}
 							style={{ flex: 1 }}
 							onClick={() => handleSort('user')}
 						>
-							Created By {sortField === 'user' && (sortDirection === 'asc' ? '↑' : '↓')}
+							Skapad av {sortField === 'user' && (sortDirection === 'asc' ? '↑' : '↓')}
 						</div>
 						<div className={styles.tableCell} style={{ flex: 1 }}>
-							Actions
+							Åtgärder
 						</div>
 					</div>
 					{sortedSongs.map((song) => (
@@ -325,13 +325,13 @@ export default function SongsPage() {
 										onClick={() => handleEdit(song)}
 										className="btn btn-small btn-secondary"
 									>
-										Edit
+										Redigera
 									</button>
 									<button
 										onClick={() => handleDelete(song.id)}
 										className="btn btn-small btn-danger"
 									>
-										Delete
+										Ta bort
 									</button>
 								</div>
 							</div>

@@ -14,16 +14,16 @@ interface Category {
 }
 
 const CATEGORY_COLORS = [
-	{ name: 'red', value: '#fee2e2', label: 'Red' },
+	{ name: 'red', value: '#fee2e2', label: 'Röd' },
 	{ name: 'orange', value: '#ffedd5', label: 'Orange' },
-	{ name: 'yellow', value: '#fef3c7', label: 'Yellow' },
-	{ name: 'green', value: '#d1fae5', label: 'Green' },
+	{ name: 'yellow', value: '#fef3c7', label: 'Gul' },
+	{ name: 'green', value: '#d1fae5', label: 'Grön' },
 	{ name: 'teal', value: '#ccfbf1', label: 'Teal' },
-	{ name: 'blue', value: '#dbeafe', label: 'Blue' },
+	{ name: 'blue', value: '#dbeafe', label: 'Blå' },
 	{ name: 'indigo', value: '#e0e7ff', label: 'Indigo' },
-	{ name: 'purple', value: '#f3e8ff', label: 'Purple' },
-	{ name: 'pink', value: '#fce7f3', label: 'Pink' },
-	{ name: 'gray', value: '#f3f4f6', label: 'Gray' },
+	{ name: 'purple', value: '#f3e8ff', label: 'Lila' },
+	{ name: 'pink', value: '#fce7f3', label: 'Rosa' },
+	{ name: 'gray', value: '#f3f4f6', label: 'Grå' },
 ]
 
 export default function CategoriesPage() {
@@ -89,11 +89,11 @@ export default function CategoriesPage() {
 					nameInputRef.current.focus()
 				}
 			} else {
-				toast.error("Failed to save category. Please try again.")
+				toast.error("Gick inte att spara kategorin. Försök igen.")
 			}
 		} catch (error) {
 			console.error("Error saving category:", error)
-			toast.error("An error occurred. Please try again.")
+			toast.error("Ett fel uppstod. Försök igen.")
 		}
 	}
 
@@ -108,7 +108,7 @@ export default function CategoriesPage() {
 
 	const handleDelete = async (id: string) => {
 		const categoryToDelete = categories.find((c) => c.id === id)
-		if (!confirm(`Are you sure you want to delete "${categoryToDelete?.name}"? This will remove it from all setlists.`)) return
+		if (!confirm(`Är du säker på att du vill ta bort "${categoryToDelete?.name}"? Denna kategori kommer att tas bort från alla setlistor.`)) return
 
 		try {
 			const res = await fetch(`/api/categories/${id}`, {
@@ -117,13 +117,13 @@ export default function CategoriesPage() {
 
 			if (res.ok) {
 				setCategories(categories.filter((c) => c.id !== id))
-				toast.success(`"${categoryToDelete?.name}" deleted successfully!`)
+				toast.success(`"${categoryToDelete?.name}" togs bort`)
 			} else {
-				toast.error("Failed to delete category. Please try again.")
+				toast.error("Gick inte att ta bort kategorin. Försök igen.")
 			}
 		} catch (error) {
 			console.error("Error deleting category:", error)
-			toast.error("An error occurred. Please try again.")
+			toast.error("Ett fel uppstod. Försök igen.")
 		}
 	}
 
@@ -138,16 +138,16 @@ export default function CategoriesPage() {
 	}
 
 	if (loading) {
-		return <div className={styles.loading}>Loading categories...</div>
+		return <div className={styles.loading}>Laddar kategorier…</div>
 	}
 
 	return (
 		<div>
 			<div className={styles.header}>
-				<h1 className={styles.title}>Categories</h1>
+				<h1 className={styles.title}>Kategorier</h1>
 				{!showForm && (
 					<button onClick={() => setShowForm(true)} className="btn btn-primary">
-						+ Add Category
+						+ Lägg till kategori
 					</button>
 				)}
 			</div>
@@ -155,13 +155,13 @@ export default function CategoriesPage() {
 			{showForm && (
 				<div className={styles.formCard}>
 					<h2 className={styles.formTitle}>
-						{editingCategory ? "Edit Category" : "Add New Category"}
+						{editingCategory ? "Redigera kategori" : "Lägg till ny kategori"}
 					</h2>
 					<form onSubmit={handleSubmit}>
 						<div className={styles.formRow}>
 							<div className="form-group" style={{ flex: 1 }}>
 								<label htmlFor="name" className="form-label">
-									Name *
+									Namn *
 								</label>
 								<input
 									ref={nameInputRef}
@@ -173,13 +173,13 @@ export default function CategoriesPage() {
 										setFormData({ ...formData, name: e.target.value })
 									}
 									required
-									placeholder="e.g., Summer Tour, Wedding, Corporate"
+									placeholder="t.ex. Hollvin, Franses, Företag"
 								/>
 							</div>
 						</div>
 
 						<div className="form-group">
-							<label className="form-label">Color *</label>
+							<label className="form-label">Färg *</label>
 							<div className={styles.colorGrid}>
 								{CATEGORY_COLORS.map((color) => (
 									<div
@@ -200,14 +200,14 @@ export default function CategoriesPage() {
 
 						<div className={styles.formActions}>
 							<button type="submit" className="btn btn-primary">
-								{editingCategory ? "Update Category" : "Add Category"}
+								{editingCategory ? "Uppdatera kategori" : "Lägg till kategori"}
 							</button>
 							<button
 								type="button"
 								onClick={handleCancel}
 								className="btn btn-secondary"
 							>
-								Cancel
+								Avbryt
 							</button>
 						</div>
 					</form>
@@ -216,7 +216,7 @@ export default function CategoriesPage() {
 
 			{categories.length === 0 ? (
 				<div className={styles.empty}>
-					<p>No categories yet. Add your first one!</p>
+					<p>Inga kategorier ännu. Lägg till din första!</p>
 				</div>
 			) : (
 				<div className={styles.grid}>
@@ -235,15 +235,15 @@ export default function CategoriesPage() {
 							<div className={styles.categoryActions}>
 								<button
 									onClick={() => handleEdit(category)}
-									className="btn btn-small btn-secondary"
+									className="btn btn-secondary"
 								>
-									Edit
+									Redigera
 								</button>
 								<button
 									onClick={() => handleDelete(category.id)}
-									className="btn btn-small btn-danger"
+									className="btn btn-danger"
 								>
-									Delete
+									Ta bort
 								</button>
 							</div>
 						</div>

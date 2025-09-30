@@ -85,7 +85,7 @@ export default function ViewSetlistPage({
 	}
 
 	if (loading) {
-		return <div className={styles.loading}>Loading setlist...</div>
+		return <div className={styles.loading}>Laddar setlist…</div>
 	}
 
 	if (!setlist) {
@@ -101,7 +101,7 @@ export default function ViewSetlistPage({
 	const formatDate = (dateString: string | null) => {
 		if (!dateString) return null
 		const date = new Date(dateString)
-		return date.toLocaleDateString('en-US', { 
+		return date.toLocaleDateString('sv-SE', { 
 			year: 'numeric', 
 			month: 'long', 
 			day: 'numeric' 
@@ -120,7 +120,7 @@ export default function ViewSetlistPage({
 								<span> • </span>
 							</>
 						)}
-						Created by {setlist.user.name} • {setlist.songs.length} songs ({minToHours(setlist.songs.length * 3)})
+						Skapad av {setlist.user.name} • {setlist.songs.length} låtar ({minToHours(setlist.songs.length * 3)})
 					</p>
 				</div>
 				<div className={styles.actions}>
@@ -128,10 +128,10 @@ export default function ViewSetlistPage({
 						href={`/dashboard/setlists/${setlistId}/edit`}
 						className="btn btn-primary"
 					>
-						Edit
+						Redigera
 					</Link>
 					<Link href="/dashboard" className="btn btn-secondary">
-						Back
+						Tillbaka
 					</Link>
 				</div>
 			</div>
@@ -140,16 +140,17 @@ export default function ViewSetlistPage({
 				{Array.from({ length: setlist.numberOfSets }, (_, i) => i + 1).map(
 					(setNumber) => {
 						const songs = getSongsBySet(setNumber)
+						
 						return (
 							<div key={setNumber} className={styles.set}>
 								<h2 className={styles.setTitle}>
 									Set {setNumber}
 									<span className={styles.songCount}>
-										{songs.length} {songs.length === 1 ? "song" : "songs"} ({minToHours(songs.length * 3)})
+										{songs.length} {songs.length === 1 ? "låt" : "låtar"} ({minToHours(songs.length * 3)})
 									</span>
 								</h2>
 								{songs.length === 0 ? (
-									<div className={styles.emptySet}>No songs in this set</div>
+									<div className={styles.emptySet}>Inga låtar i denna setlist</div>
 								) : (
 									<div className={styles.songList}>
 										{songs.map((setlistSong, index) => (
@@ -171,7 +172,7 @@ export default function ViewSetlistPage({
 														<div className={styles.songMeta}>
 															{setlistSong.song.key && (
 																<span className={styles.metaItem}>
-																	Key: {setlistSong.song.key}
+																	Tonart: {setlistSong.song.key}
 																</span>
 															)}
 															{setlistSong.song.tempo && (

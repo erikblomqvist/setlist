@@ -13,7 +13,7 @@ function LoginContent() {
 	useEffect(() => {
 		const errorParam = searchParams.get("error")
 		if (errorParam === "unauthorized") {
-			setError("Your account is not authorized. Please contact an admin to be added as a band member.")
+			setError("Ditt konto är inte godkänd. Kontakta Erik för att bli tillagd som bandmedlem.")
 		}
 	}, [searchParams])
 
@@ -78,7 +78,7 @@ function LoginContent() {
 					</button>
 
 					<p className={styles.helpText}>
-						Only band members with authorized Gmail accounts can access this app.
+						Endast bandmedlemmar med godkända Gmail-konton kan komma åt denna app.
 					</p>
 				</div>
 			</div>
@@ -91,8 +91,8 @@ export default function LoginPage() {
 		<Suspense fallback={
 			<div className={styles.container}>
 				<div className={styles.loginBox}>
-					<h1 className={styles.title}>Setlist Manager</h1>
-					<p className={styles.subtitle}>Loading...</p>
+					<h1 className={styles.title}>Nyléns Setlists</h1>
+					<p className={styles.subtitle}>Laddar…</p>
 				</div>
 			</div>
 		}>

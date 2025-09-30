@@ -12,11 +12,7 @@ interface User {
 	role: string
 }
 
-export default function DashboardLayout({
-	children,
-}: {
-	children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: {children: React.ReactNode}) {
 	const router = useRouter()
 	const [user, setUser] = useState<User | null>(null)
 	const [loading, setLoading] = useState(true)
@@ -52,7 +48,7 @@ export default function DashboardLayout({
 				height: "100vh",
 				fontSize: "18px"
 			}}>
-				Loading...
+				Laddar…
 			</div>
 		)
 	}
@@ -65,7 +61,7 @@ export default function DashboardLayout({
 		<>
 			<Toaster position="bottom-right" richColors />
 			<Navbar
-				userName={user.name || user.email || "User"}
+				userName={user.name || user.email || "Användare"}
 				userRole={user.role}
 			/>
 			<main style={{ padding: "32px 20px", maxWidth: "1400px", margin: "0 auto" }}>

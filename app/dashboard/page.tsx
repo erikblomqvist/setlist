@@ -125,7 +125,7 @@ export default function DashboardPage() {
 	const formatDate = (dateString: string | null) => {
 		if (!dateString) return null
 		const date = new Date(dateString)
-		return date.toLocaleDateString('en-US', {
+		return date.toLocaleDateString('sv-SE', {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric'
@@ -133,7 +133,7 @@ export default function DashboardPage() {
 	}
 
 	const handleDelete = async (id: string) => {
-		if (!confirm("Are you sure you want to delete this setlist?")) return
+		if (!confirm("Är du säker på att du vill ta bort denna setlist?")) return
 
 		try {
 			const res = await fetch(`/api/setlists/${id}`, {
@@ -149,7 +149,7 @@ export default function DashboardPage() {
 	}
 
 	if (loading) {
-		return <div className={styles.loading}>Loading setlists...</div>
+		return <div className={styles.loading}>Laddar setlists…</div>
 	}
 
 	return (
@@ -163,20 +163,20 @@ export default function DashboardPage() {
 						className="form-select"
 						style={{ width: 'auto' }}
 					>
-						<option value="updated">Recently Updated</option>
-						<option value="date-desc">Date (Newest)</option>
-						<option value="date-asc">Date (Oldest)</option>
-						<option value="name">Name (A-Z)</option>
+						<option value="updated">Nyligen uppdaterade</option>
+						<option value="date-desc">Datum (nyaste)</option>
+						<option value="date-asc">Datum (äldsta)</option>
+						<option value="name">Namn (A-Ö)</option>
 					</select>
 					<Link href="/dashboard/setlists/new" className="btn btn-primary">
-						+ New Setlist
+						+ Ny setlist
 					</Link>
 				</div>
 			</div>
 
 			{categories.length > 0 && (
 				<div className={styles.filterSection}>
-					<h3 className={styles.filterTitle}>Filter by Category:</h3>
+					<h3 className={styles.filterTitle}>Filtrera efter kategori:</h3>
 					<div className={styles.filterChips}>
 						{categories.map((category) => (
 							<button
@@ -197,7 +197,7 @@ export default function DashboardPage() {
 								className={styles.filterClear}
 								onClick={() => setSelectedCategoryIds([])}
 							>
-								Clear filters
+								Rensa filter
 							</button>
 						)}
 					</div>
@@ -207,11 +207,11 @@ export default function DashboardPage() {
 			{filteredAndSortedSetlists.length === 0 ? (
 				setlists.length === 0 ? (
 					<div className={styles.empty}>
-						<p>No setlists yet. Create your first one!</p>
+						<p>Inga setlists ännu. Skapa din första!</p>
 					</div>
 				) : (
 					<div className={styles.empty}>
-						<p>No setlists match the selected categories.</p>
+						<p>Inga setlists matchar de valda kategorierna.</p>
 					</div>
 				)
 			) : (
@@ -222,7 +222,7 @@ export default function DashboardPage() {
 								<h3 className={styles.cardTitle}>
 									<Link href={`/dashboard/setlists/${setlist.id}`}>{setlist.name}</Link>
 								</h3>
-								<span className={styles.badge}>{setlist.numberOfSets} {setlist.numberOfSets === 1 ? 'set' : 'sets'}</span>
+								<span className={styles.badge}>{setlist.numberOfSets} set</span>
 							</div>
 							{setlist.categories.length > 0 && (
 								<div className={styles.cardCategories}>
@@ -241,27 +241,27 @@ export default function DashboardPage() {
 								{setlist.date && (
 									<span className={styles.date}>📅 {formatDate(setlist.date)}</span>
 								)}
-								<span>Created by {setlist.user.name}</span>
-								<span>{setlist.songs.length} songs ({minToHours(setlist.songs.length * 3)})</span>
+								<span>Skapad av {setlist.user.name}</span>
+								<span>{setlist.songs.length} låtar ({minToHours(setlist.songs.length * 3)})</span>
 							</div>
 							<div className={styles.cardActions}>
 								<Link
 									href={`/dashboard/setlists/${setlist.id}`}
 									className="btn btn-primary"
 								>
-									View
+									Visa
 								</Link>
 								<Link
 									href={`/dashboard/setlists/${setlist.id}/edit`}
 									className="btn btn-secondary"
 								>
-									Edit
+									Redigera
 								</Link>
 								<button
 									onClick={() => handleDelete(setlist.id)}
 									className="btn btn-danger"
 								>
-									Delete
+									Ta bort
 								</button>
 							</div>
 						</div>

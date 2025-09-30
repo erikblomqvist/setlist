@@ -22,7 +22,7 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 			<div className={styles.container}>
 				<div className={styles.left}>
 					<Link href="/dashboard" className={styles.logo}>
-						🎵 Setlist Manager
+						🎵 Nyléns Setlists
 					</Link>
 					<div className={styles.links}>
 						<Link
@@ -35,20 +35,20 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 							href="/dashboard/songs"
 							className={pathname === "/dashboard/songs" ? styles.linkActive : styles.link}
 						>
-							Songs
+							Låtar
 						</Link>
 						<Link
 							href="/dashboard/categories"
 							className={pathname === "/dashboard/categories" ? styles.linkActive : styles.link}
 						>
-							Categories
+							Kategorier
 						</Link>
 						{userRole === "admin" && (
 							<Link
 								href="/dashboard/users"
 								className={pathname === "/dashboard/users" ? styles.linkActive : styles.link}
 							>
-								Users
+								Användare
 							</Link>
 						)}
 					</div>
@@ -56,7 +56,7 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 				<div className={styles.right}>
 					<span className={styles.userName}>{userName}</span>
 					<button onClick={handleSignOut} className="btn btn-small btn-secondary">
-						Sign Out
+						Logga ut
 					</button>
 				</div>
 			</div>

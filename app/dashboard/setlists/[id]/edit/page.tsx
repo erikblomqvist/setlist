@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { minToHours } from "@/app/utils/min-to-hours"
 import styles from "./edit.module.css"
 
 interface Song {
@@ -28,19 +29,19 @@ interface Category {
 }
 
 interface Setlist {
-  id: string
-  name: string
-  numberOfSets: number
-  date: string | null
-  songs: SetlistSong[]
-  categories: Category[]
+	id: string
+	name: string
+	numberOfSets: number
+	date: string | null
+	songs: SetlistSong[]
+	categories: Category[]
 }
 
 const COLORS = [
-	{ name: "red", label: "Red", value: "var(--color-red)" },
-	{ name: "blue", label: "Blue", value: "var(--color-blue)" },
-	{ name: "green", label: "Green", value: "var(--color-green)" },
-	{ name: "yellow", label: "Yellow", value: "var(--color-yellow)" },
+	{ name: "red", label: "Röd", value: "var(--color-red)" },
+	{ name: "blue", label: "Blå", value: "var(--color-blue)" },
+	{ name: "green", label: "Grön", value: "var(--color-green)" },
+	{ name: "yellow", label: "Gul", value: "var(--color-yellow)" },
 	{ name: "purple", label: "Purple", value: "var(--color-purple)" },
 ]
 
@@ -57,11 +58,7 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 	gray: '#f3f4f6',
 }
 
-export default function EditSetlistPage({
-	params,
-}: {
-	params: Promise<{ id: string }>
-}) {
+export default function EditSetlistPage({ params }: { params: Promise<{ id: string }> }) {
 	const router = useRouter()
 	const [setlist, setSetlist] = useState<Setlist | null>(null)
 	const [allSongs, setAllSongs] = useState<Song[]>([])
@@ -69,11 +66,11 @@ export default function EditSetlistPage({
 	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
 	const [setlistSongs, setSetlistSongs] = useState<SetlistSong[]>([])
 	const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showAutocomplete, setShowAutocomplete] = useState(false)
-  const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
-  const [setlistId, setSetlistId] = useState<string | null>(null)
+	const [saving, setSaving] = useState(false)
+	const [searchTerm, setSearchTerm] = useState("")
+	const [showAutocomplete, setShowAutocomplete] = useState(false)
+	const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
+	const [setlistId, setSetlistId] = useState<string | null>(null)
 
 	useEffect(() => {
 		const getParams = async () => {
@@ -94,14 +91,14 @@ export default function EditSetlistPage({
 
 		try {
 			const res = await fetch(`/api/setlists/${setlistId}`)
-      if (res.ok) {
-        const data = await res.json()
-        setSetlist(data)
-        setSetlistSongs(data.songs || [])
-        const dateValue = data.date ? new Date(data.date).toISOString().split('T')[0] : ""
-        setFormData({ name: data.name, numberOfSets: data.numberOfSets, date: dateValue })
-        setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
-      }
+			if (res.ok) {
+				const data = await res.json()
+				setSetlist(data)
+				setSetlistSongs(data.songs || [])
+				const dateValue = data.date ? new Date(data.date).toISOString().split('T')[0] : ""
+				setFormData({ name: data.name, numberOfSets: data.numberOfSets, date: dateValue })
+				setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
+			}
 		} catch (error) {
 			console.error("Error fetching setlist:", error)
 		} finally {
@@ -268,17 +265,17 @@ export default function EditSetlistPage({
 				backgroundColor: s.backgroundColor || null,
 			}))
 
-      const res = await fetch(`/api/setlists/${setlistId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          numberOfSets: formData.numberOfSets,
-          date: formData.date || null,
-          songs: songsData,
-          categoryIds: selectedCategoryIds,
-        }),
-      })
+			const res = await fetch(`/api/setlists/${setlistId}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: formData.name,
+					numberOfSets: formData.numberOfSets,
+					date: formData.date || null,
+					songs: songsData,
+					categoryIds: selectedCategoryIds,
+				}),
+			})
 
 			if (res.ok) {
 				router.push(`/dashboard/setlists/${setlistId}`)
@@ -297,7 +294,7 @@ export default function EditSetlistPage({
 	}
 
 	if (loading) {
-		return <div className={styles.loading}>Loading...</div>
+		return <div className={styles.loading}>Laddar…</div>
 	}
 
 	if (!setlist) {
@@ -308,76 +305,75 @@ export default function EditSetlistPage({
 		<div>
 			<div className={styles.header}>
 				<div>
-					<h1 className={styles.title}>Edit Setlist</h1>
+					<h1 className={styles.title}>Redigera setlist</h1>
 				</div>
 				<div className={styles.actions}>
 					<button onClick={handleSave} className="btn btn-success" disabled={saving}>
-						{saving ? "Saving..." : "Save Changes"}
+						{saving ? "Sparar…" : "Spara ändringar"}
 					</button>
 					<button
 						onClick={() => router.push(`/dashboard/setlists/${setlistId}`)}
 						className="btn btn-secondary"
 					>
-						Cancel
+						Avbryt
 					</button>
 				</div>
 			</div>
 
-      <div className={styles.basicInfo}>
-        <div className="form-group" style={{ flex: 2 }}>
-          <label htmlFor="name" className="form-label">
-            Setlist Name
-          </label>
-          <input
-            id="name"
-            type="text"
-            className="form-input"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-        </div>
-        <div className="form-group" style={{ flex: 1 }}>
-          <label htmlFor="numberOfSets" className="form-label">
-            Number of Sets
-          </label>
-          <input
-            id="numberOfSets"
-            type="number"
-            className="form-input"
-            value={formData.numberOfSets}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                numberOfSets: parseInt(e.target.value) || 1,
-              })
-            }
-            min="1"
-            max="10"
-          />
-        </div>
-        <div className="form-group" style={{ flex: 1 }}>
-          <label htmlFor="date" className="form-label">
-            Date
-          </label>
-          <input
-            id="date"
-            type="date"
-            className="form-input"
-            value={formData.date}
-            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-          />
-        </div>
-      </div>
+			<div className={styles.basicInfo}>
+				<div className="form-group" style={{ flex: 2 }}>
+					<label htmlFor="name" className="form-label">
+						Setlist-namn
+					</label>
+					<input
+						id="name"
+						type="text"
+						className="form-input"
+						value={formData.name}
+						onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+					/>
+				</div>
+				<div className="form-group" style={{ flex: 1 }}>
+					<label htmlFor="numberOfSets" className="form-label">
+						Antal set
+					</label>
+					<input
+						id="numberOfSets"
+						type="number"
+						className="form-input"
+						value={formData.numberOfSets}
+						onChange={(e) =>
+							setFormData({
+								...formData,
+								numberOfSets: parseInt(e.target.value) || 1,
+							})
+						}
+						min="1"
+						max="10"
+					/>
+				</div>
+				<div className="form-group" style={{ flex: 1 }}>
+					<label htmlFor="date" className="form-label">
+						Datum
+					</label>
+					<input
+						id="date"
+						type="date"
+						className="form-input"
+						value={formData.date}
+						onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+					/>
+				</div>
+			</div>
 
 			{allCategories.length > 0 && (
 				<div className={styles.categorySection}>
-					<label className="form-label">Categories</label>
+					<label className="form-label">Kategorier</label>
 					<div className={styles.categoryGrid}>
 						{allCategories.map((category) => (
 							<div
 								key={category.id}
-								className={`${styles.categoryOption} ${selectedCategoryIds.includes(category.id) ? styles.categoryOptionSelected : ''
-									}`}
+								className={`${styles.categoryOption} ${selectedCategoryIds.includes(category.id) ? styles.categoryOptionSelected : ''}`}
 								onClick={() => toggleCategory(category.id)}
 							>
 								<div
@@ -396,7 +392,7 @@ export default function EditSetlistPage({
 					<input
 						type="text"
 						className="form-input"
-						placeholder="Search for a song to add..."
+						placeholder="Sök efter en låt att lägga till…"
 						value={searchTerm}
 						onChange={(e) => {
 							setSearchTerm(e.target.value)
@@ -421,7 +417,7 @@ export default function EditSetlistPage({
 									<div className={styles.songInfo}>
 										<strong>{song.title}</strong>
 										<span>
-											{song.key && `Key: ${song.key}`}
+											{song.key && `Tonart: ${song.key}`}
 											{song.key && song.tempo && " • "}
 											{song.tempo && `Tempo: ${song.tempo}`}
 										</span>
@@ -461,12 +457,12 @@ export default function EditSetlistPage({
 								<h2 className={styles.setTitle}>
 									Set {setNumber}
 									<span className={styles.songCount}>
-										{songs.length} {songs.length === 1 ? "song" : "songs"}
+										{songs.length} {songs.length === 1 ? "låt" : "låtar"} ({minToHours(songs.length * 3)})
 									</span>
 								</h2>
 								{songs.length === 0 ? (
 									<div className={styles.emptySet}>
-										No songs in this set. Use the search above to add songs.
+										Inga låtar i detta set. Använd söket ovan för att lägga till låtar.
 									</div>
 								) : (
 									<div className={styles.songList}>
@@ -487,7 +483,7 @@ export default function EditSetlistPage({
 															onClick={() => moveSong(setlistSong.id, "up")}
 															disabled={index === 0}
 															className={styles.orderBtn}
-															title="Move up"
+															title="Flytta upp"
 														>
 															▲
 														</button>
@@ -495,7 +491,7 @@ export default function EditSetlistPage({
 															onClick={() => moveSong(setlistSong.id, "down")}
 															disabled={index === songs.length - 1}
 															className={styles.orderBtn}
-															title="Move down"
+															title="Flytta ner"
 														>
 															▼
 														</button>
@@ -524,7 +520,7 @@ export default function EditSetlistPage({
 														<input
 															type="text"
 															className={styles.commentInput}
-															placeholder="Add comments..."
+															placeholder="Lägg till kommentar…"
 															value={setlistSong.comments || ""}
 															onChange={(e) =>
 																updateSong(setlistSong.id, {
@@ -545,7 +541,7 @@ export default function EditSetlistPage({
 																		backgroundColor: "",
 																	})
 																}
-																title="No color"
+																title="Ingen färg"
 															>
 																✕
 															</button>
@@ -594,7 +590,7 @@ export default function EditSetlistPage({
 															onClick={() => removeSong(setlistSong.id)}
 															className="btn btn-small btn-danger"
 														>
-															Remove
+															Ta bort
 														</button>
 													</div>
 												</div>
