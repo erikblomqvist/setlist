@@ -43,19 +43,32 @@ const COLOR_MAP: { [key: string]: string } = {
 export default function ViewSetlistPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const router = useRouter()
   const [setlist, setSetlist] = useState<Setlist | null>(null)
   const [loading, setLoading] = useState(true)
+  const [setlistId, setSetlistId] = useState<string | null>(null)
 
   useEffect(() => {
-    fetchSetlist()
-  }, [params.id])
+    const getParams = async () => {
+      const { id } = await params
+      setSetlistId(id)
+    }
+    getParams()
+  }, [params])
+
+  useEffect(() => {
+    if (setlistId) {
+      fetchSetlist()
+    }
+  }, [setlistId])
 
   const fetchSetlist = async () => {
+    if (!setlistId) return
+    
     try {
-      const res = await fetch(`/api/setlists/${params.id}`)
+      const res = await fetch(`/api/setlists/${setlistId}`)
       if (res.ok) {
         const data = await res.json()
         setSetlist(data)
@@ -94,7 +107,7 @@ export default function ViewSetlistPage({
         </div>
         <div className={styles.actions}>
           <Link
-            href={`/dashboard/setlists/${params.id}/edit`}
+            href={`/dashboard/setlists/${setlistId}/edit`}
             className="btn btn-primary"
           >
             Edit

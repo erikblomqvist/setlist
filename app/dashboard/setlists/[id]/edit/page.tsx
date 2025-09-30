@@ -39,7 +39,7 @@ const COLORS = [
 export default function EditSetlistPage({
   params,
 }: {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const router = useRouter()
   const [setlist, setSetlist] = useState<Setlist | null>(null)
@@ -50,14 +50,27 @@ export default function EditSetlistPage({
   const [searchTerm, setSearchTerm] = useState("")
   const [showAutocomplete, setShowAutocomplete] = useState(false)
   const [formData, setFormData] = useState({ name: "", numberOfSets: 1 })
+  const [setlistId, setSetlistId] = useState<string | null>(null)
 
   useEffect(() => {
-    Promise.all([fetchSetlist(), fetchSongs()])
-  }, [params.id])
+    const getParams = async () => {
+      const { id } = await params
+      setSetlistId(id)
+    }
+    getParams()
+  }, [params])
+
+  useEffect(() => {
+    if (setlistId) {
+      Promise.all([fetchSetlist(), fetchSongs()])
+    }
+  }, [setlistId])
 
   const fetchSetlist = async () => {
+    if (!setlistId) return
+    
     try {
-      const res = await fetch(`/api/setlists/${params.id}`)
+      const res = await fetch(`/api/setlists/${setlistId}`)
       if (res.ok) {
         const data = await res.json()
         setSetlist(data)
@@ -194,6 +207,8 @@ export default function EditSetlistPage({
   }
 
   const handleSave = async () => {
+    if (!setlistId) return
+    
     setSaving(true)
     try {
       const songsData = setlistSongs.map((s, index) => ({
@@ -204,7 +219,7 @@ export default function EditSetlistPage({
         backgroundColor: s.backgroundColor || null,
       }))
 
-      const res = await fetch(`/api/setlists/${params.id}`, {
+      const res = await fetch(`/api/setlists/${setlistId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -215,7 +230,7 @@ export default function EditSetlistPage({
       })
 
       if (res.ok) {
-        router.push(`/dashboard/setlists/${params.id}`)
+        router.push(`/dashboard/setlists/${setlistId}`)
       }
     } catch (error) {
       console.error("Error saving setlist:", error)
@@ -249,7 +264,7 @@ export default function EditSetlistPage({
             {saving ? "Saving..." : "Save Changes"}
           </button>
           <button
-            onClick={() => router.push(`/dashboard/setlists/${params.id}`)}
+            onClick={() => router.push(`/dashboard/setlists/${setlistId}`)}
             className="btn btn-secondary"
           >
             Cancel

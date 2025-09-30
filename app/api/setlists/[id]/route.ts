@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -13,8 +13,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const setlist = await prisma.setlist.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -52,7 +53,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -61,11 +62,12 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const { name, numberOfSets, songs } = await req.json()
 
     // Update setlist basic info
     const setlist = await prisma.setlist.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         numberOfSets
@@ -76,14 +78,14 @@ export async function PUT(
     if (songs) {
       // Delete existing songs
       await prisma.setlistSong.deleteMany({
-        where: { setlistId: params.id }
+        where: { setlistId: id }
       })
 
       // Create new songs
       if (songs.length > 0) {
         await prisma.setlistSong.createMany({
           data: songs.map((song: any) => ({
-            setlistId: params.id,
+            setlistId: id,
             songId: song.songId,
             setNumber: song.setNumber,
             position: song.position,
@@ -96,7 +98,7 @@ export async function PUT(
 
     // Fetch updated setlist with songs
     const updatedSetlist = await prisma.setlist.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -127,7 +129,7 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth()
@@ -136,8 +138,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     await prisma.setlist.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ success: true })
