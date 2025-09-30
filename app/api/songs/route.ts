@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
+async function checkUserAuth() {
+  const session = await auth()
+  
+  if (!session?.user?.email) {
+    return { authorized: false, user: null }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+
+  if (!user) {
+    return { authorized: false, user: null }
+  }
+
+  return { authorized: true, user }
+}
+
 export async function GET() {
   try {
-    const session = await auth()
+    const { authorized } = await checkUserAuth()
     
-    if (!session?.user) {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -35,9 +53,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth()
+    const { authorized, user } = await checkUserAuth()
     
-    if (!session?.user) {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -55,7 +73,7 @@ export async function POST(req: NextRequest) {
         title,
         key: key || null,
         tempo: tempo || null,
-        createdBy: (session.user as any).id
+        createdBy: user!.id
       },
       include: {
         user: {

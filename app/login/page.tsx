@@ -1,16 +1,28 @@
 "use client"
 
 import { signIn } from "next-auth/react"
-import { useState } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 import styles from "./login.module.css"
 
-export default function LoginPage() {
+function LoginContent() {
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    const errorParam = searchParams.get("error")
+    if (errorParam === "unauthorized") {
+      setError("Your account is not authorized. Please contact an admin to be added as a band member.")
+    }
+  }, [searchParams])
 
   const handleGoogleSignIn = async () => {
     setLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/dashboard" })
+      await signIn("google", { 
+        callbackUrl: "/dashboard"
+      })
     } catch (error) {
       console.error("Error signing in:", error)
     } finally {
@@ -23,6 +35,20 @@ export default function LoginPage() {
       <div className={styles.loginBox}>
         <h1 className={styles.title}>Setlist Manager</h1>
         <p className={styles.subtitle}>Sign in with your Gmail account</p>
+
+        {error && (
+          <div style={{
+            padding: "12px",
+            marginBottom: "20px",
+            backgroundColor: "#fee",
+            border: "1px solid #fcc",
+            borderRadius: "8px",
+            color: "#c33",
+            fontSize: "14px"
+          }}>
+            {error}
+          </div>
+        )}
 
         <div className={styles.form}>
           <button
@@ -57,5 +83,20 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className={styles.container}>
+        <div className={styles.loginBox}>
+          <h1 className={styles.title}>Setlist Manager</h1>
+          <p className={styles.subtitle}>Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   )
 }

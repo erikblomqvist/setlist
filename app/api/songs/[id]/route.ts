@@ -2,14 +2,32 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
+async function checkUserAuth() {
+  const session = await auth()
+  
+  if (!session?.user?.email) {
+    return { authorized: false, user: null }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+
+  if (!user) {
+    return { authorized: false, user: null }
+  }
+
+  return { authorized: true, user }
+}
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
+    const { authorized } = await checkUserAuth()
     
-    if (!session?.user) {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -54,9 +72,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth()
+    const { authorized } = await checkUserAuth()
     
-    if (!session?.user) {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

@@ -2,11 +2,29 @@ import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 
+async function checkAdminAuth() {
+  const session = await auth()
+  
+  if (!session?.user?.email) {
+    return { authorized: false, user: null }
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email }
+  })
+
+  if (!user || user.role !== 'admin') {
+    return { authorized: false, user: null }
+  }
+
+  return { authorized: true, user }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth()
+    const { authorized, user } = await checkAdminAuth()
     
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
@@ -30,7 +48,7 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const user = await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         email,
         name,
@@ -45,7 +63,7 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    return NextResponse.json(user, { status: 201 })
+    return NextResponse.json(newUser, { status: 201 })
   } catch (error) {
     console.error("Error creating user:", error)
     return NextResponse.json(
@@ -57,9 +75,9 @@ export async function POST(req: NextRequest) {
 
 export async function GET() {
   try {
-    const session = await auth()
+    const { authorized } = await checkAdminAuth()
     
-    if (!session?.user || (session.user as any).role !== 'admin') {
+    if (!authorized) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 

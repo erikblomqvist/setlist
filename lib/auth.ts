@@ -1,6 +1,5 @@
 import { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
-import { prisma } from "./prisma"
 
 export const authConfig: NextAuthConfig = {
   providers: [
@@ -10,52 +9,35 @@ export const authConfig: NextAuthConfig = {
     })
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
-      if (account?.provider === "google") {
-        try {
-          // Check if user exists in our database
-          const existingUser = await prisma.user.findUnique({
-            where: { email: user.email! }
-          })
-
-          console.log('Sign in attempt for:', user.email)
-          console.log('User found in database:', !!existingUser)
-          
-          if (!existingUser) {
-            console.log('User not found in database, denying access')
-            return false
-          }
-
-          console.log('User found, allowing access')
-          return true
-        } catch (error) {
-          console.error('Database error during sign in:', error)
-          return false
-        }
-      }
-      return true
-    },
     async jwt({ token, user, account }) {
+      // Only set user info on initial sign in
       if (user && account?.provider === "google") {
-        // Get user from database to get their role
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email! }
-        })
-
-        if (dbUser) {
-          token.id = dbUser.id
-          token.role = dbUser.role
-        }
+        token.email = user.email
+        token.name = user.name
       }
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).id = token.id
-        ;(session.user as any).role = token.role
+      if (session?.user && token?.email) {
+        session.user.email = token.email as string
+        session.user.name = token.name as string
       }
       return session
-    }
+    },
+    authorized: async ({ auth, request }) => {
+      const isLoggedIn = !!auth?.user
+      const isOnDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+      const isOnLogin = request.nextUrl.pathname.startsWith('/login')
+      
+      if (isOnDashboard) {
+        if (isLoggedIn) return true
+        return false // Redirect unauthenticated users to login page
+      } else if (isLoggedIn && isOnLogin) {
+        return Response.redirect(new URL('/dashboard', request.nextUrl))
+      }
+      
+      return true
+    },
   },
   pages: {
     signIn: '/login',
