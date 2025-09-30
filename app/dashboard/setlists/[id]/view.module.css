@@ -2,7 +2,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
-	margin-bottom: 32px;
+	margin-block-end: 32px;
 	gap: 20px;
 
 	@media (max-width: 480px) {
@@ -14,7 +14,7 @@
 	font-size: 32px;
 	font-weight: 700;
 	color: var(--text);
-	margin-bottom: 8px;
+	margin-block-end: 8px;
 }
 
 .subtitle {
@@ -46,6 +46,16 @@
 	gap: 12px;
 }
 
+.actions .btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.actions .material-icons {
+	font-size: 18px;
+}
+
 .sets {
 	display: flex;
 	flex-direction: column;
@@ -64,7 +74,7 @@
 	font-size: 24px;
 	font-weight: 600;
 	color: var(--text);
-	margin-bottom: 20px;
+	margin-block-end: 20px;
 	display: flex;
 	align-items: center;
 	gap: 12px;
@@ -151,14 +161,203 @@
 	font-size: 14px;
 	color: var(--text-secondary);
 	font-weight: 500;
+
+	em, strong {
+		font-style: normal;
+		font-weight: 400;
+	}
 }
 
 .comments {
-	margin-top: 8px;
+	margin-block-start: 8px;
 	font-size: 14px;
 	color: var(--text-secondary);
 	font-style: italic;
 	padding: 8px 12px;
 	background-color: rgba(0, 0, 0, 0.03);
 	border-radius: 6px;
+}
+
+/* Print Styles */
+@media print {
+	/* Hide non-essential elements */
+	.header,
+	.actions,
+	.material-icons,
+	.comments,
+	.songCount,
+	.subtitle,
+	.date {
+		display: none;
+	}
+
+	/* Reset page margins and set up for printing */
+	@page {
+		margin: 0.5in;
+		size: A4;
+	}
+
+	/* Global print styles - applied to specific elements */
+	.sets,
+	.set,
+	.songItem,
+	.songNumber,
+	.songContent,
+	.songTitle,
+	.songMeta,
+	.metaItem {
+		-webkit-print-color-adjust: exact;
+		color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	/* Main container */
+	.sets {
+		display: block;
+		gap: 0;
+	}
+
+	/* Set styling for print */
+	.set {
+		background-color: white;
+		border: 2px solid #000;
+		border-radius: 0;
+		box-shadow: none;
+		margin-block-end: 20px;
+		padding: 15px;
+		page-break-inside: avoid;
+	}
+
+	/* Set title for print */
+	.setTitle {
+		margin-block-end: 10px;
+		border-bottom: 2px solid #000;
+		padding-block-end: 5px;
+
+		text-align: center;
+		font-size: 32px;
+		font-weight: bold;
+		text-transform: uppercase;
+		color: #000;
+	}
+
+	/* Song list for print */
+	.songList {
+		display: block;
+		gap: 0;
+	}
+
+	/* Song item for print - table-like structure */
+	.songItem {
+		display: table;
+		width: 100%;
+		border: 0;
+		border-radius: 0;
+		margin: 0;
+		padding: 8px;
+		background-color: white;
+		page-break-inside: avoid;
+	}
+
+	/* Song number for print */
+	.songNumber {
+		display: table-cell;
+		width: 40px;
+		height: 40px;
+		height: auto;
+		background-color: #000;
+		color: white;
+		border-radius: 0;
+		font-weight: bold;
+		font-size: 14px;
+		text-align: center;
+		vertical-align: middle;
+		padding: 8px 4px;
+		border-right: 1px solid #000;
+	}
+
+	/* Song content for print */
+	.songContent {
+		display: table-cell;
+		vertical-align: middle;
+		padding-left: 10px;
+	}
+
+	/* Song header for print */
+	.songHeader {
+		display: table;
+		width: 100%;
+	}
+
+	/* Song title for print */
+	.songTitle {
+		display: table-cell;
+		font-size: 16px;
+		font-weight: bold;
+		color: #000;
+		width: 70%;
+		vertical-align: middle;
+	}
+
+	/* Song meta for print */
+	.songMeta {
+		display: table-cell;
+		text-align: right;
+		vertical-align: middle;
+		width: 30%;
+	}
+
+	/* Meta items for print */
+	.metaItem {
+		font-size: 20px;
+		color: #000;
+		font-weight: normal;
+		display: block;
+		text-align: right;
+	}
+
+	/* Hide key label for print */
+	.metaItem:nth-child(1) em {
+		display: none;
+	}
+
+	/* Hide tempo for print */
+	.metaItem:nth-child(2) {
+		display: none;
+	}
+
+	/* Empty set for print */
+	.emptySet {
+		text-align: center;
+		padding: 20px;
+		color: #666;
+		background-color: #f5f5f5;
+		border: 1px solid #ccc;
+		font-size: 14px;
+	}
+
+	/* Ensure proper spacing between sets */
+	.set + .set {
+		margin-block-start: 20px;
+	}
+
+	/* Page break handling */
+	.set {
+		page-break-inside: avoid;
+	}
+
+	/* If a set is too long, allow breaking but keep songs together */
+	.songItem {
+		page-break-inside: avoid;
+	}
+
+	/* Ensure good contrast for printing */
+	.songItem:nth-child(even) {
+		padding-inline-start: 58px;
+		background-color: #f9f9f9;
+	}
+
+	.songItem:nth-child(odd) {
+		background-color: white;
+	}
 }

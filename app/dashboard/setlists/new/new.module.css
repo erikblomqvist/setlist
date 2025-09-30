@@ -4,7 +4,7 @@
 }
 
 .header {
-	margin-bottom: 32px;
+	margin-block-end: 32px;
 }
 
 .title {
@@ -65,5 +65,5 @@
 .actions {
 	display: flex;
 	gap: 12px;
-	margin-top: 24px;
+	margin-block-start: 24px;
 }

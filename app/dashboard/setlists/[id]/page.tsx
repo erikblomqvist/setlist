@@ -124,6 +124,13 @@ export default function ViewSetlistPage({
 					</p>
 				</div>
 				<div className={styles.actions}>
+					<button
+						onClick={() => window.print()}
+						className="btn btn-secondary"
+					>
+						<span className="material-icons">print</span>
+						Skriv ut
+					</button>
 					<Link
 						href={`/dashboard/setlists/${setlistId}/edit`}
 						className="btn btn-primary"
@@ -157,11 +164,7 @@ export default function ViewSetlistPage({
 											<div
 												key={setlistSong.id}
 												className={styles.songItem}
-												style={{
-													backgroundColor: setlistSong.backgroundColor
-														? COLOR_MAP[setlistSong.backgroundColor]
-														: "white",
-												}}
+												{...(setlistSong.backgroundColor ? { style: { backgroundColor: COLOR_MAP[setlistSong.backgroundColor] } } : {})}
 											>
 												<div className={styles.songNumber}>{index + 1}</div>
 												<div className={styles.songContent}>
@@ -172,12 +175,12 @@ export default function ViewSetlistPage({
 														<div className={styles.songMeta}>
 															{setlistSong.song.key && (
 																<span className={styles.metaItem}>
-																	Tonart: {setlistSong.song.key}
+																	<em>Tonart:</em> <strong>{setlistSong.song.key}</strong>
 																</span>
 															)}
 															{setlistSong.song.tempo && (
 																<span className={styles.metaItem}>
-																	Tempo: {setlistSong.song.tempo}
+																	<em>Tempo:</em> <strong>{setlistSong.song.tempo}</strong>
 																</span>
 															)}
 														</div>

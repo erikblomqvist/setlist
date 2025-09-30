@@ -2,7 +2,7 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin-bottom: 32px;
+	margin-block-end: 32px;
 }
 
 .title {
@@ -30,7 +30,7 @@
 	background-color: white;
 	border-radius: 5px;
 	padding: 24px;
-	margin-bottom: 32px;
+	margin-block-end: 32px;
 	border: 1px solid var(--border);
 	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
@@ -38,14 +38,14 @@
 .formTitle {
 	font-size: 20px;
 	font-weight: 600;
-	margin-bottom: 20px;
+	margin-block-end: 20px;
 	color: var(--text);
 }
 
 .formRow {
 	display: flex;
 	gap: 16px;
-	margin-bottom: 20px;
+	margin-block-end: 20px;
 }
 
 .formActions {

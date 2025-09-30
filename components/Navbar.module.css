@@ -101,8 +101,8 @@
 		min-height: 64px;
 		flex-direction: column;
 		gap: 12px;
-		padding-top: 12px;
-		padding-bottom: 12px;
+		padding-block-start: 12px;
+		padding-block-end: 12px;
 	}
 
 	.left {
@@ -130,7 +130,7 @@
 	.right {
 		width: 100%;
 		justify-content: space-between;
-		padding-top: 8px;
+		padding-block-start: 8px;
 		border-top: 1px solid var(--border);
 	}
 
@@ -160,5 +160,11 @@
 
 	.userName {
 		max-width: 150px;
+	}
+}
+
+@media print {
+	.navbar {
+		display: none;
 	}
 }
