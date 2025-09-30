@@ -94,6 +94,16 @@
   align-items: center;
 }
 
+.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.2s;
+}
+
+.sortable:hover {
+  color: var(--primary);
+}
+
 .actions {
   display: flex;
   gap: 8px;

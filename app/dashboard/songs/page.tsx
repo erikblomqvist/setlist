@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import styles from "./songs.module.css"
 
 interface Song {
@@ -13,16 +13,29 @@ interface Song {
   }
 }
 
+type SortField = 'title' | 'key' | 'tempo' | 'user'
+type SortDirection = 'asc' | 'desc'
+
 export default function SongsPage() {
   const [songs, setSongs] = useState<Song[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingSong, setEditingSong] = useState<Song | null>(null)
   const [formData, setFormData] = useState({ title: "", key: "", tempo: "" })
+  const [sortField, setSortField] = useState<SortField>('title')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
+  const titleInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     fetchSongs()
   }, [])
+
+  // Focus on title input when form is shown
+  useEffect(() => {
+    if (showForm && titleInputRef.current) {
+      titleInputRef.current.focus()
+    }
+  }, [showForm])
 
   const fetchSongs = async () => {
     try {
@@ -94,6 +107,56 @@ export default function SongsPage() {
     setFormData({ title: "", key: "", tempo: "" })
   }
 
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortField(field)
+      setSortDirection('asc')
+    }
+  }
+
+  const sortedSongs = [...songs].sort((a, b) => {
+    switch (sortField) {
+      case 'title': {
+        const aValue = a.title.toLowerCase()
+        const bValue = b.title.toLowerCase()
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+        return 0
+      }
+      case 'key': {
+        const aValue = (a.key || '').toLowerCase()
+        const bValue = (b.key || '').toLowerCase()
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+        return 0
+      }
+      case 'tempo': {
+        // Extract numbers from tempo strings (e.g., "120 BPM" -> 120)
+        const extractNumber = (tempo: string | null): number => {
+          if (!tempo) return 0
+          const match = tempo.match(/\d+/)
+          return match ? parseInt(match[0], 10) : 0
+        }
+        const aValue = extractNumber(a.tempo)
+        const bValue = extractNumber(b.tempo)
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+        return 0
+      }
+      case 'user': {
+        const aValue = a.user.name.toLowerCase()
+        const bValue = b.user.name.toLowerCase()
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1
+        return 0
+      }
+      default:
+        return 0
+    }
+  })
+
   if (loading) {
     return <div className={styles.loading}>Loading songs...</div>
   }
@@ -121,6 +184,7 @@ export default function SongsPage() {
                   Title *
                 </label>
                 <input
+                  ref={titleInputRef}
                   id="title"
                   type="text"
                   className="form-input"
@@ -185,23 +249,39 @@ export default function SongsPage() {
       ) : (
         <div className={styles.table}>
           <div className={styles.tableHeader}>
-            <div className={styles.tableCell} style={{ flex: 2 }}>
-              Title
+            <div 
+              className={`${styles.tableCell} ${styles.sortable}`} 
+              style={{ flex: 2 }}
+              onClick={() => handleSort('title')}
+            >
+              Title {sortField === 'title' && (sortDirection === 'asc' ? '↑' : '↓')}
             </div>
-            <div className={styles.tableCell} style={{ flex: 1 }}>
-              Key
+            <div 
+              className={`${styles.tableCell} ${styles.sortable}`} 
+              style={{ flex: 1 }}
+              onClick={() => handleSort('key')}
+            >
+              Key {sortField === 'key' && (sortDirection === 'asc' ? '↑' : '↓')}
             </div>
-            <div className={styles.tableCell} style={{ flex: 1 }}>
-              Tempo
+            <div 
+              className={`${styles.tableCell} ${styles.sortable}`} 
+              style={{ flex: 1 }}
+              onClick={() => handleSort('tempo')}
+            >
+              Tempo {sortField === 'tempo' && (sortDirection === 'asc' ? '↑' : '↓')}
             </div>
-            <div className={styles.tableCell} style={{ flex: 1 }}>
-              Created By
+            <div 
+              className={`${styles.tableCell} ${styles.sortable}`} 
+              style={{ flex: 1 }}
+              onClick={() => handleSort('user')}
+            >
+              Created By {sortField === 'user' && (sortDirection === 'asc' ? '↑' : '↓')}
             </div>
             <div className={styles.tableCell} style={{ flex: 1 }}>
               Actions
             </div>
           </div>
-          {songs.map((song) => (
+          {sortedSongs.map((song) => (
             <div key={song.id} className={styles.tableRow}>
               <div className={styles.tableCell} style={{ flex: 2 }}>
                 <strong>{song.title}</strong>
