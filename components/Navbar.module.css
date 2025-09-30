@@ -33,6 +33,13 @@
 	font-weight: 700;
 	color: var(--primary);
 	text-decoration: none;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.logo .material-icons {
+	font-size: 24px;
 }
 
 .links {
@@ -68,6 +75,16 @@
 	display: flex;
 	align-items: center;
 	gap: 16px;
+}
+
+.right .btn {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.right .material-icons {
+	font-size: 18px;
 }
 
 .userName {

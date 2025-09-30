@@ -22,7 +22,8 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 			<div className={styles.container}>
 				<div className={styles.left}>
 					<Link href="/dashboard" className={styles.logo}>
-						🎵 Nyléns Setlists
+						<span className="material-icons">music_note</span>
+						Nyléns Setlists
 					</Link>
 					<div className={styles.links}>
 						<Link
@@ -56,6 +57,7 @@ export default function Navbar({ userName, userRole }: NavbarProps) {
 				<div className={styles.right}>
 					<span className={styles.userName}>{userName}</span>
 					<button onClick={handleSignOut} className="btn btn-small btn-secondary">
+						<span className="material-icons">logout</span>
 						Logga ut
 					</button>
 				</div>

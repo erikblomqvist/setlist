@@ -116,7 +116,7 @@ export default function ViewSetlistPage({
 					<p className={styles.subtitle}>
 						{setlist.date && (
 							<>
-								<span className={styles.date}>📅 {formatDate(setlist.date)}</span>
+								<span className={styles.date}><span className="material-icons">calendar_month</span> {formatDate(setlist.date)}</span>
 								<span> • </span>
 							</>
 						)}

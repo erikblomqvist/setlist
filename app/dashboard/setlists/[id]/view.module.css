@@ -18,11 +18,19 @@
 }
 
 .subtitle {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	
 	color: var(--text-secondary);
 	font-size: 14px;
 }
 
 .date {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	line-height: 1.25;
 	color: var(--text);
 	font-weight: 500;
 }

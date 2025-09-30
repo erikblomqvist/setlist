@@ -239,7 +239,7 @@ export default function DashboardPage() {
 							)}
 							<div className={styles.cardMeta}>
 								{setlist.date && (
-									<span className={styles.date}>📅 {formatDate(setlist.date)}</span>
+									<span className={styles.date}><span className="material-icons">calendar_month</span> {formatDate(setlist.date)}</span>
 								)}
 								<span>Skapad av {setlist.user.name}</span>
 								<span>{setlist.songs.length} låtar ({minToHours(setlist.songs.length * 3)})</span>
