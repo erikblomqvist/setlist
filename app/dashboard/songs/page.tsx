@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
+import { toast } from "sonner"
 import styles from "./songs.module.css"
 
 interface Song {
@@ -66,12 +67,30 @@ export default function SongsPage() {
 
       if (res.ok) {
         fetchSongs()
-        setShowForm(false)
-        setEditingSong(null)
+        
+        if (editingSong) {
+          // If editing, close the form and show success message
+          toast.success(`"${formData.title}" updated successfully!`)
+          setShowForm(false)
+          setEditingSong(null)
+        } else {
+          // If adding, show success message and keep form open
+          toast.success(`"${formData.title}" added successfully!`)
+        }
+        
+        // Always reset form data (for both add and edit)
         setFormData({ title: "", key: "", tempo: "" })
+        
+        // Focus back on title field for adding more songs
+        if (!editingSong && titleInputRef.current) {
+          titleInputRef.current.focus()
+        }
+      } else {
+        toast.error("Failed to save song. Please try again.")
       }
     } catch (error) {
       console.error("Error saving song:", error)
+      toast.error("An error occurred. Please try again.")
     }
   }
 
@@ -86,6 +105,7 @@ export default function SongsPage() {
   }
 
   const handleDelete = async (id: string) => {
+    const songToDelete = songs.find((s) => s.id === id)
     if (!confirm("Are you sure you want to delete this song?")) return
 
     try {
@@ -95,9 +115,13 @@ export default function SongsPage() {
 
       if (res.ok) {
         setSongs(songs.filter((s) => s.id !== id))
+        toast.success(`"${songToDelete?.title}" deleted successfully!`)
+      } else {
+        toast.error("Failed to delete song. Please try again.")
       }
     } catch (error) {
       console.error("Error deleting song:", error)
+      toast.error("An error occurred. Please try again.")
     }
   }
 

@@ -426,7 +426,7 @@ export default function EditSetlistPage({
                               type="text"
                               className={styles.commentInput}
                               placeholder="Add comments..."
-                              value={setlistSong.comments}
+                              value={setlistSong.comments || ""}
                               onChange={(e) =>
                                 updateSong(setlistSong.id, {
                                   comments: e.target.value,

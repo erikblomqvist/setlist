@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import { Toaster } from "sonner"
 
 interface User {
   id: string
@@ -62,6 +63,7 @@ export default function DashboardLayout({
 
   return (
     <>
+      <Toaster position="bottom-right" richColors />
       <Navbar 
         userName={user.name || user.email || "User"} 
         userRole={user.role}
