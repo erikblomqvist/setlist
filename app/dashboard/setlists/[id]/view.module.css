@@ -22,6 +22,11 @@
 	font-size: 14px;
 }
 
+.date {
+	color: var(--text);
+	font-weight: 500;
+}
+
 .loading {
 	text-align: center;
 	padding: 60px;

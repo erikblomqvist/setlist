@@ -28,11 +28,12 @@ interface Category {
 }
 
 interface Setlist {
-	id: string
-	name: string
-	numberOfSets: number
-	songs: SetlistSong[]
-	categories: Category[]
+  id: string
+  name: string
+  numberOfSets: number
+  date: string | null
+  songs: SetlistSong[]
+  categories: Category[]
 }
 
 const COLORS = [
@@ -68,11 +69,11 @@ export default function EditSetlistPage({
 	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
 	const [setlistSongs, setSetlistSongs] = useState<SetlistSong[]>([])
 	const [loading, setLoading] = useState(true)
-	const [saving, setSaving] = useState(false)
-	const [searchTerm, setSearchTerm] = useState("")
-	const [showAutocomplete, setShowAutocomplete] = useState(false)
-	const [formData, setFormData] = useState({ name: "", numberOfSets: 1 })
-	const [setlistId, setSetlistId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [showAutocomplete, setShowAutocomplete] = useState(false)
+  const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
+  const [setlistId, setSetlistId] = useState<string | null>(null)
 
 	useEffect(() => {
 		const getParams = async () => {
@@ -93,13 +94,14 @@ export default function EditSetlistPage({
 
 		try {
 			const res = await fetch(`/api/setlists/${setlistId}`)
-			if (res.ok) {
-				const data = await res.json()
-				setSetlist(data)
-				setSetlistSongs(data.songs || [])
-				setFormData({ name: data.name, numberOfSets: data.numberOfSets })
-				setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
-			}
+      if (res.ok) {
+        const data = await res.json()
+        setSetlist(data)
+        setSetlistSongs(data.songs || [])
+        const dateValue = data.date ? new Date(data.date).toISOString().split('T')[0] : ""
+        setFormData({ name: data.name, numberOfSets: data.numberOfSets, date: dateValue })
+        setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
+      }
 		} catch (error) {
 			console.error("Error fetching setlist:", error)
 		} finally {
@@ -266,16 +268,17 @@ export default function EditSetlistPage({
 				backgroundColor: s.backgroundColor || null,
 			}))
 
-			const res = await fetch(`/api/setlists/${setlistId}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					name: formData.name,
-					numberOfSets: formData.numberOfSets,
-					songs: songsData,
-					categoryIds: selectedCategoryIds,
-				}),
-			})
+      const res = await fetch(`/api/setlists/${setlistId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          numberOfSets: formData.numberOfSets,
+          date: formData.date || null,
+          songs: songsData,
+          categoryIds: selectedCategoryIds,
+        }),
+      })
 
 			if (res.ok) {
 				router.push(`/dashboard/setlists/${setlistId}`)
@@ -320,39 +323,51 @@ export default function EditSetlistPage({
 				</div>
 			</div>
 
-			<div className={styles.basicInfo}>
-				<div className="form-group" style={{ flex: 2 }}>
-					<label htmlFor="name" className="form-label">
-						Setlist Name
-					</label>
-					<input
-						id="name"
-						type="text"
-						className="form-input"
-						value={formData.name}
-						onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-					/>
-				</div>
-				<div className="form-group" style={{ flex: 1 }}>
-					<label htmlFor="numberOfSets" className="form-label">
-						Number of Sets
-					</label>
-					<input
-						id="numberOfSets"
-						type="number"
-						className="form-input"
-						value={formData.numberOfSets}
-						onChange={(e) =>
-							setFormData({
-								...formData,
-								numberOfSets: parseInt(e.target.value) || 1,
-							})
-						}
-						min="1"
-						max="10"
-					/>
-				</div>
-			</div>
+      <div className={styles.basicInfo}>
+        <div className="form-group" style={{ flex: 2 }}>
+          <label htmlFor="name" className="form-label">
+            Setlist Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            className="form-input"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </div>
+        <div className="form-group" style={{ flex: 1 }}>
+          <label htmlFor="numberOfSets" className="form-label">
+            Number of Sets
+          </label>
+          <input
+            id="numberOfSets"
+            type="number"
+            className="form-input"
+            value={formData.numberOfSets}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                numberOfSets: parseInt(e.target.value) || 1,
+              })
+            }
+            min="1"
+            max="10"
+          />
+        </div>
+        <div className="form-group" style={{ flex: 1 }}>
+          <label htmlFor="date" className="form-label">
+            Date
+          </label>
+          <input
+            id="date"
+            type="date"
+            className="form-input"
+            value={formData.date}
+            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+          />
+        </div>
+      </div>
 
 			{allCategories.length > 0 && (
 				<div className={styles.categorySection}>

@@ -24,12 +24,12 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 }
 
 export default function NewSetlistPage() {
-	const router = useRouter()
-	const [formData, setFormData] = useState({ name: "", numberOfSets: 1 })
-	const [categories, setCategories] = useState<Category[]>([])
-	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
-	const [loading, setLoading] = useState(false)
-	const [error, setError] = useState("")
+  const router = useRouter()
+  const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
 	useEffect(() => {
 		fetchCategories()
@@ -65,14 +65,16 @@ export default function NewSetlistPage() {
 		setLoading(true)
 
 		try {
-			const res = await fetch("/api/setlists", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					...formData,
-					categoryIds: selectedCategoryIds
-				}),
-			})
+      const res = await fetch("/api/setlists", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          numberOfSets: formData.numberOfSets,
+          date: formData.date || null,
+          categoryIds: selectedCategoryIds
+        }),
+      })
 
 			if (res.ok) {
 				const setlist = await res.json()
@@ -112,28 +114,43 @@ export default function NewSetlistPage() {
 						/>
 					</div>
 
-					<div className="form-group">
-						<label htmlFor="numberOfSets" className="form-label">
-							Number of Sets *
-						</label>
-						<input
-							id="numberOfSets"
-							type="number"
-							className="form-input"
-							value={formData.numberOfSets}
-							onChange={(e) =>
-								setFormData({
-									...formData,
-									numberOfSets: parseInt(e.target.value) || 1,
-								})
-							}
-							required
-							min="1"
-							max="10"
-						/>
-					</div>
+          <div className="form-group">
+            <label htmlFor="numberOfSets" className="form-label">
+              Number of Sets *
+            </label>
+            <input
+              id="numberOfSets"
+              type="number"
+              className="form-input"
+              value={formData.numberOfSets}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  numberOfSets: parseInt(e.target.value) || 1,
+                })
+              }
+              required
+              min="1"
+              max="10"
+            />
+          </div>
 
-					{categories.length > 0 && (
+          <div className="form-group">
+            <label htmlFor="date" className="form-label">
+              Date (optional)
+            </label>
+            <input
+              id="date"
+              type="date"
+              className="form-input"
+              value={formData.date}
+              onChange={(e) =>
+                setFormData({ ...formData, date: e.target.value })
+              }
+            />
+          </div>
+
+          {categories.length > 0 && (
 						<div className="form-group">
 							<label className="form-label">Categories (optional)</label>
 							<div className={styles.categoryGrid}>

@@ -26,6 +26,7 @@ interface Setlist {
 	id: string
 	name: string
 	numberOfSets: number
+	date: string | null
 	user: {
 		name: string
 	}
@@ -96,12 +97,28 @@ export default function ViewSetlistPage({
 			.sort((a, b) => a.position - b.position)
 	}
 
+	const formatDate = (dateString: string | null) => {
+		if (!dateString) return null
+		const date = new Date(dateString)
+		return date.toLocaleDateString('en-US', { 
+			year: 'numeric', 
+			month: 'long', 
+			day: 'numeric' 
+		})
+	}
+
 	return (
 		<div>
 			<div className={styles.header}>
 				<div>
 					<h1 className={styles.title}>{setlist.name}</h1>
 					<p className={styles.subtitle}>
+						{setlist.date && (
+							<>
+								<span className={styles.date}>📅 {formatDate(setlist.date)}</span>
+								<span> • </span>
+							</>
+						)}
 						Created by {setlist.user.name} • {setlist.songs.length} songs
 					</p>
 				</div>

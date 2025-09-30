@@ -75,24 +75,25 @@ export async function POST(req: NextRequest) {
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const { name, numberOfSets, categoryIds } = await req.json()
+    const { name, numberOfSets, categoryIds, date } = await req.json()
 
-		if (!name) {
-			return NextResponse.json(
-				{ error: "Name is required" },
-				{ status: 400 }
-			)
-		}
+    if (!name) {
+      return NextResponse.json(
+        { error: "Name is required" },
+        { status: 400 }
+      )
+    }
 
-		const setlist = await prisma.setlist.create({
-			data: {
-				name,
-				numberOfSets: numberOfSets || 1,
-				createdBy: user!.id,
-				categories: categoryIds && categoryIds.length > 0 ? {
-					connect: categoryIds.map((id: string) => ({ id }))
-				} : undefined
-			},
+    const setlist = await prisma.setlist.create({
+      data: {
+        name,
+        numberOfSets: numberOfSets || 1,
+        date: date ? new Date(date) : null,
+        createdBy: user!.id,
+        categories: categoryIds && categoryIds.length > 0 ? {
+          connect: categoryIds.map((id: string) => ({ id }))
+        } : undefined
+      },
 			include: {
 				user: {
 					select: {

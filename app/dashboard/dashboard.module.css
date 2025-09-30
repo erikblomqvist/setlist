@@ -1,8 +1,16 @@
 .header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .title {
@@ -173,12 +181,17 @@
 }
 
 .cardMeta {
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-	margin-bottom: 20px;
-	font-size: 14px;
-	color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.date {
+  color: var(--text);
+  font-weight: 500;
 }
 
 .cardActions {

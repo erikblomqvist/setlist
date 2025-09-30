@@ -87,20 +87,21 @@ export async function PUT(
 			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
 		}
 
-		const { id } = await params
-		const { name, numberOfSets, songs, categoryIds } = await req.json()
+    const { id } = await params
+    const { name, numberOfSets, songs, categoryIds, date } = await req.json()
 
-		// Update setlist basic info
-		const setlist = await prisma.setlist.update({
-			where: { id },
-			data: {
-				name,
-				numberOfSets,
-				categories: categoryIds !== undefined ? {
-					set: categoryIds.map((catId: string) => ({ id: catId }))
-				} : undefined
-			}
-		})
+    // Update setlist basic info
+    const setlist = await prisma.setlist.update({
+      where: { id },
+      data: {
+        name,
+        numberOfSets,
+        date: date !== undefined ? (date ? new Date(date) : null) : undefined,
+        categories: categoryIds !== undefined ? {
+          set: categoryIds.map((catId: string) => ({ id: catId }))
+        } : undefined
+      }
+    })
 
 		// If songs are provided, update them
 		if (songs) {
