@@ -163,6 +163,133 @@ export async function PUT(
 	}
 }
 
+export async function POST(
+	req: NextRequest,
+	{ params }: { params: Promise<{ id: string }> }
+) {
+	try {
+		const { authorized, user } = await checkUserAuth()
+
+		if (!authorized) {
+			return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+		}
+
+		const { id } = await params
+		
+		// Get the original setlist with all its data
+		const originalSetlist = await prisma.setlist.findUnique({
+			where: { id },
+			include: {
+				songs: {
+					include: {
+						song: true
+					},
+					orderBy: [
+						{ setNumber: 'asc' },
+						{ position: 'asc' }
+					]
+				},
+				categories: {
+					select: {
+						id: true,
+						name: true,
+						color: true
+					}
+				}
+			}
+		})
+
+		if (!originalSetlist) {
+			return NextResponse.json(
+				{ error: "Setlist not found" },
+				{ status: 404 }
+			)
+		}
+
+		// Create the duplicated setlist
+		const duplicatedSetlist = await prisma.setlist.create({
+			data: {
+				name: `${originalSetlist.name} (Kopia)`,
+				numberOfSets: originalSetlist.numberOfSets,
+				date: originalSetlist.date,
+				createdBy: user!.id,
+				categories: {
+					connect: originalSetlist.categories.map(cat => ({ id: cat.id }))
+				}
+			},
+			include: {
+				user: {
+					select: {
+						name: true
+					}
+				},
+				songs: {
+					include: {
+						song: true
+					}
+				},
+				categories: {
+					select: {
+						id: true,
+						name: true,
+						color: true
+					}
+				}
+			}
+		})
+
+		// Copy all the songs from the original setlist
+		if (originalSetlist.songs.length > 0) {
+			await prisma.setlistSong.createMany({
+				data: originalSetlist.songs.map(setlistSong => ({
+					setlistId: duplicatedSetlist.id,
+					songId: setlistSong.songId,
+					setNumber: setlistSong.setNumber,
+					position: setlistSong.position,
+					comments: setlistSong.comments,
+					backgroundColor: setlistSong.backgroundColor
+				}))
+			})
+		}
+
+		// Fetch the complete duplicated setlist with songs
+		const completeDuplicatedSetlist = await prisma.setlist.findUnique({
+			where: { id: duplicatedSetlist.id },
+			include: {
+				user: {
+					select: {
+						name: true
+					}
+				},
+				songs: {
+					include: {
+						song: true
+					},
+					orderBy: [
+						{ setNumber: 'asc' },
+						{ position: 'asc' }
+					]
+				},
+				categories: {
+					select: {
+						id: true,
+						name: true,
+						color: true
+					}
+				}
+			}
+		})
+
+		return NextResponse.json(completeDuplicatedSetlist, { status: 201 })
+	} catch (error) {
+		console.error("Error duplicating setlist:", error)
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 }
+		)
+	}
+}
+
 export async function DELETE(
 	req: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }

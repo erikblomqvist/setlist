@@ -46,6 +46,7 @@ export default function DashboardPage() {
 	const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([])
 	const [sortBy, setSortBy] = useState<SortOption>('updated')
 	const [loading, setLoading] = useState(true)
+	const [duplicating, setDuplicating] = useState<string | null>(null)
 
 	useEffect(() => {
 		fetchSetlists()
@@ -145,6 +146,29 @@ export default function DashboardPage() {
 			}
 		} catch (error) {
 			console.error("Error deleting setlist:", error)
+		}
+	}
+
+	const handleDuplicate = async (id: string) => {
+		if (duplicating) return
+
+		setDuplicating(id)
+		try {
+			const res = await fetch(`/api/setlists/${id}`, {
+				method: 'POST'
+			})
+			
+			if (res.ok) {
+				const duplicatedSetlist = await res.json()
+				// Add the duplicated setlist to the beginning of the list
+				setSetlists(prev => [duplicatedSetlist, ...prev])
+			} else {
+				console.error("Error duplicating setlist")
+			}
+		} catch (error) {
+			console.error("Error duplicating setlist:", error)
+		} finally {
+			setDuplicating(null)
 		}
 	}
 
@@ -257,6 +281,13 @@ export default function DashboardPage() {
 								>
 									Redigera
 								</Link>
+								<button
+									onClick={() => handleDuplicate(setlist.id)}
+									disabled={duplicating === setlist.id}
+									className="btn btn-secondary"
+								>
+									{duplicating === setlist.id ? "Duplicerar..." : "Duplicera"}
+								</button>
 								<button
 									onClick={() => handleDelete(setlist.id)}
 									className="btn btn-danger"

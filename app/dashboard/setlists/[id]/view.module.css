@@ -1,11 +1,11 @@
 .header {
 	display: flex;
 	justify-content: space-between;
-	align-items: flex-start;
+	align-items: start;
 	margin-block-end: 32px;
 	gap: 20px;
 
-	@media (max-width: 480px) {
+	@media (width < 480px) {
 		flex-direction: column;
 	}
 }
@@ -24,6 +24,11 @@
 	
 	color: var(--text-secondary);
 	font-size: 14px;
+
+	@media (width < 480px) {
+		flex-direction: column;
+		align-items: start;
+	}
 }
 
 .date {
@@ -106,7 +111,7 @@
 
 .songItem {
 	display: flex;
-	align-items: center;
+	align-items: start;
 	gap: 16px;
 
 	border-radius: 8px;
@@ -137,10 +142,12 @@
 .songHeader {
 	display: flex;
 	justify-content: space-between;
-	align-items: baseline;
+	align-items: center;
 	gap: 16px;
 
-	@media (max-width: 480px) {
+	min-height: 32px;
+
+	@media (width < 480px) {
 		flex-direction: column;
 	}
 }
@@ -171,7 +178,6 @@
 .comments {
 	margin-block-start: 8px;
 	font-size: 14px;
-	color: var(--text-secondary);
 	font-style: italic;
 	padding: 8px 12px;
 	background-color: rgba(0, 0, 0, 0.03);

@@ -51,6 +51,7 @@ export default function ViewSetlistPage({
 	const [setlist, setSetlist] = useState<Setlist | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [setlistId, setSetlistId] = useState<string | null>(null)
+	const [duplicating, setDuplicating] = useState(false)
 
 	useEffect(() => {
 		const getParams = async () => {
@@ -81,6 +82,29 @@ export default function ViewSetlistPage({
 			console.error("Error fetching setlist:", error)
 		} finally {
 			setLoading(false)
+		}
+	}
+
+	const handleDuplicate = async () => {
+		if (!setlistId || duplicating) return
+
+		setDuplicating(true)
+		try {
+			const res = await fetch(`/api/setlists/${setlistId}`, {
+				method: 'POST'
+			})
+			
+			if (res.ok) {
+				const duplicatedSetlist = await res.json()
+				// Redirect to the duplicated setlist
+				router.push(`/dashboard/setlists/${duplicatedSetlist.id}`)
+			} else {
+				console.error("Error duplicating setlist")
+			}
+		} catch (error) {
+			console.error("Error duplicating setlist:", error)
+		} finally {
+			setDuplicating(false)
 		}
 	}
 
@@ -115,12 +139,9 @@ export default function ViewSetlistPage({
 					<h1 className={styles.title}>{setlist.name}</h1>
 					<p className={styles.subtitle}>
 						{setlist.date && (
-							<>
-								<span className={styles.date}><span className="material-icons">calendar_month</span> {formatDate(setlist.date)}</span>
-								<span> • </span>
-							</>
+							<span className={styles.date}><span className="material-icons">calendar_month</span> {formatDate(setlist.date)}</span>
 						)}
-						Skapad av {setlist.user.name} • {setlist.songs.length} låtar ({minToHours(setlist.songs.length * 3)})
+						<span>Skapad av {setlist.user.name} • {setlist.songs.length} låtar ({minToHours(setlist.songs.length * 3)})</span>
 					</p>
 				</div>
 				<div className={styles.actions}>
@@ -130,6 +151,13 @@ export default function ViewSetlistPage({
 					>
 						<span className="material-icons">print</span>
 						Skriv ut
+					</button>
+					<button
+						onClick={handleDuplicate}
+						disabled={duplicating}
+						className="btn btn-secondary"
+					>
+						{duplicating ? "Duplicerar..." : "Duplicera"}
 					</button>
 					<Link
 						href={`/dashboard/setlists/${setlistId}/edit`}
