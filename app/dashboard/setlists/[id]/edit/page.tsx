@@ -50,6 +50,7 @@ interface Setlist {
 	name: string
 	numberOfSets: number
 	date: string | null
+	setNames: { [key: number]: string } | null
 	songs: SetlistSong[]
 	categories: Category[]
 }
@@ -79,6 +80,7 @@ interface SortableSongItemProps {
 	setlistSong: SetlistSong
 	index: number
 	formData: { numberOfSets: number }
+	setNames: { [key: number]: string }
 	onUpdateSong: (id: string, updates: Partial<Pick<SetlistSong, "comments" | "backgroundColor">>) => void
 	onRemoveSong: (id: string) => void
 	onMoveSongToSet: (id: string, newSetNumber: number) => void
@@ -89,6 +91,7 @@ function SortableSongItem({
 	setlistSong,
 	index,
 	formData,
+	setNames,
 	onUpdateSong,
 	onRemoveSong,
 	onMoveSongToSet,
@@ -250,27 +253,27 @@ function SortableSongItem({
 						))}
 					</div>
 
-					{formData.numberOfSets > 1 && (
-						<select
-							className={styles.setSelect}
-							value={setlistSong.setNumber}
-							onChange={(e) =>
-								onMoveSongToSet(
-									setlistSong.id,
-									parseInt(e.target.value)
-								)
-							}
-						>
-							{Array.from(
-								{ length: formData.numberOfSets },
-								(_, i) => i + 1
-							).map((num) => (
-								<option key={num} value={num}>
-									Set {num}
-								</option>
-							))}
-						</select>
-					)}
+									{formData.numberOfSets > 1 && (
+										<select
+											className={styles.setSelect}
+											value={setlistSong.setNumber}
+											onChange={(e) =>
+												onMoveSongToSet(
+													setlistSong.id,
+													parseInt(e.target.value)
+												)
+											}
+										>
+											{Array.from(
+												{ length: formData.numberOfSets },
+												(_, i) => i + 1
+											).map((num) => (
+												<option key={num} value={num}>
+													{setNames[num] || `Set ${num}`}
+												</option>
+											))}
+										</select>
+									)}
 
 					<button
 						onClick={() => onRemoveSong(setlistSong.id)}
@@ -296,6 +299,8 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 	const [searchTerm, setSearchTerm] = useState("")
 	const [showAutocomplete, setShowAutocomplete] = useState(false)
 	const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
+	const [setNames, setSetNames] = useState<{ [key: number]: string }>({})
+	const [editingSetNumber, setEditingSetNumber] = useState<number | null>(null)
 	const [setlistId, setSetlistId] = useState<string | null>(null)
 
 	const sensors = useSensors(
@@ -331,6 +336,7 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 				const dateValue = data.date ? new Date(data.date).toISOString().split('T')[0] : ""
 				setFormData({ name: data.name, numberOfSets: data.numberOfSets, date: dateValue })
 				setSelectedCategoryIds(data.categories?.map((c: Category) => c.id) || [])
+				setSetNames(data.setNames || {})
 			}
 		} catch (error) {
 			console.error("Error fetching setlist:", error)
@@ -523,6 +529,30 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 		setSetlistSongs(updated)
 	}
 
+	const handleSetNameChange = (setNumber: number, newName: string) => {
+		setSetNames((prev) => ({
+			...prev,
+			[setNumber]: newName,
+		}))
+	}
+
+	const handleSetNameSave = (setNumber: number) => {
+		setEditingSetNumber(null)
+	}
+
+	const handleSetNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, setNumber: number) => {
+		if (e.key === "Enter") {
+			e.preventDefault()
+			handleSetNameSave(setNumber)
+		} else if (e.key === "Escape") {
+			setEditingSetNumber(null)
+		}
+	}
+
+	const getSetName = (setNumber: number) => {
+		return setNames[setNumber] || `Set ${setNumber}`
+	}
+
 	const handleSave = async () => {
 		if (!setlistId) return
 
@@ -545,6 +575,7 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 					date: formData.date || null,
 					songs: songsData,
 					categoryIds: selectedCategoryIds,
+					setNames: setNames,
 				}),
 			})
 
@@ -707,7 +738,7 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 													}}
 													className="btn btn-small btn-primary"
 												>
-													Set {setNum}
+													{setNames[setNum] || `Set ${setNum}`}
 												</button>
 											))}
 										</div>
@@ -728,7 +759,25 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 						return (
 							<div key={setNumber} className={styles.set}>
 								<h2 className={styles.setTitle}>
-									Set {setNumber}
+									{editingSetNumber === setNumber ? (
+										<input
+											type="text"
+											className={styles.setNameInput}
+											value={setNames[setNumber] || `Set ${setNumber}`}
+											onChange={(e) => handleSetNameChange(setNumber, e.target.value)}
+											onBlur={() => handleSetNameSave(setNumber)}
+											onKeyDown={(e) => handleSetNameKeyDown(e, setNumber)}
+											autoFocus
+										/>
+									) : (
+										<span
+											className={styles.setNameEditable}
+											onClick={() => setEditingSetNumber(setNumber)}
+											title="Klicka för att ändra namn"
+										>
+											{getSetName(setNumber)}
+										</span>
+									)}
 									<span className={styles.songCount}>
 										{songs.length} {songs.length === 1 ? "låt" : "låtar"} ({minToHours(songs.length * 3)})
 									</span>
@@ -754,6 +803,7 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 														setlistSong={setlistSong}
 														index={index}
 														formData={formData}
+														setNames={setNames}
 														onUpdateSong={updateSong}
 														onRemoveSong={removeSong}
 														onMoveSongToSet={moveSongToSet}

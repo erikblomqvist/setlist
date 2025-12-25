@@ -28,6 +28,7 @@ interface Setlist {
 	name: string
 	numberOfSets: number
 	date: string | null
+	setNames: { [key: number]: string } | null
 	user: {
 		name: string
 	}
@@ -122,6 +123,10 @@ export default function ViewSetlistPage({
 			.sort((a, b) => a.position - b.position)
 	}
 
+	const getSetName = (setNumber: number) => {
+		return setlist.setNames?.[setNumber] || `Set ${setNumber}`
+	}
+
 	const formatDate = (dateString: string | null) => {
 		if (!dateString) return null
 		const date = new Date(dateString)
@@ -179,7 +184,7 @@ export default function ViewSetlistPage({
 						return (
 							<div key={setNumber} className={styles.set}>
 								<h2 className={styles.setTitle}>
-									Set {setNumber}
+									{getSetName(setNumber)}
 									<span className={styles.songCount}>
 										{songs.length} {songs.length === 1 ? "låt" : "låtar"} ({minToHours(songs.length * 3)})
 									</span>

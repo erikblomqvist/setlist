@@ -182,6 +182,34 @@
 	gap: 12px;
 }
 
+.setNameEditable {
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 4px;
+	transition: all 0.2s;
+}
+
+.setNameEditable:hover {
+	background-color: var(--surface);
+}
+
+.setNameInput {
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--text);
+	background-color: white;
+	border: 2px solid var(--primary);
+	border-radius: 4px;
+	padding: 4px 8px;
+	outline: none;
+	min-width: 200px;
+}
+
+.setNameInput:focus {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
 .songCount {
 	font-size: 14px;
 	font-weight: 500;

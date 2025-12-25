@@ -88,7 +88,7 @@ export async function PUT(
 		}
 
     const { id } = await params
-    const { name, numberOfSets, songs, categoryIds, date } = await req.json()
+    const { name, numberOfSets, songs, categoryIds, date, setNames } = await req.json()
 
     // Update setlist basic info
     const setlist = await prisma.setlist.update({
@@ -97,6 +97,7 @@ export async function PUT(
         name,
         numberOfSets,
         date: date !== undefined ? (date ? new Date(date) : null) : undefined,
+        setNames: setNames !== undefined ? setNames : undefined,
         categories: categoryIds !== undefined ? {
           set: categoryIds.map((catId: string) => ({ id: catId }))
         } : undefined
