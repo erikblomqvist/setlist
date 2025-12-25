@@ -2,6 +2,23 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import {
+	DndContext,
+	closestCenter,
+	KeyboardSensor,
+	PointerSensor,
+	useSensor,
+	useSensors,
+	DragEndEvent,
+} from "@dnd-kit/core"
+import {
+	arrayMove,
+	SortableContext,
+	sortableKeyboardCoordinates,
+	useSortable,
+	verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { CSS } from "@dnd-kit/utilities"
 import { minToHours } from "@/app/utils/min-to-hours"
 import styles from "./edit.module.css"
 
@@ -58,6 +75,215 @@ const CATEGORY_COLORS: { [key: string]: string } = {
 	gray: '#f3f4f6',
 }
 
+interface SortableSongItemProps {
+	setlistSong: SetlistSong
+	index: number
+	formData: { numberOfSets: number }
+	onUpdateSong: (id: string, updates: Partial<Pick<SetlistSong, "comments" | "backgroundColor">>) => void
+	onRemoveSong: (id: string) => void
+	onMoveSongToSet: (id: string, newSetNumber: number) => void
+	onChangePosition: (id: string, newPosition: number, setNumber: number) => void
+}
+
+function SortableSongItem({
+	setlistSong,
+	index,
+	formData,
+	onUpdateSong,
+	onRemoveSong,
+	onMoveSongToSet,
+	onChangePosition,
+}: SortableSongItemProps) {
+	const {
+		attributes,
+		listeners,
+		setNodeRef,
+		transform,
+		transition,
+		isDragging,
+	} = useSortable({ id: setlistSong.id })
+
+	const [isEditingNumber, setIsEditingNumber] = useState(false)
+	const [numberValue, setNumberValue] = useState(String(index + 1))
+
+	useEffect(() => {
+		setNumberValue(String(index + 1))
+	}, [index])
+
+	const style = {
+		transform: CSS.Transform.toString(transform),
+		transition,
+		opacity: isDragging ? 0.5 : 1,
+	}
+
+	const handleNumberBlur = () => {
+		setIsEditingNumber(false)
+		const newPosition = parseInt(numberValue)
+		if (!isNaN(newPosition) && newPosition >= 1 && newPosition !== index + 1) {
+			onChangePosition(setlistSong.id, newPosition, setlistSong.setNumber)
+		} else {
+			setNumberValue(String(index + 1))
+		}
+	}
+
+	const handleNumberKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === "Enter") {
+			e.currentTarget.blur()
+		} else if (e.key === "Escape") {
+			setNumberValue(String(index + 1))
+			setIsEditingNumber(false)
+		}
+	}
+
+	return (
+		<div
+			ref={setNodeRef}
+			style={{
+				...style,
+				backgroundColor: setlistSong.backgroundColor
+					? COLORS.find((c) => c.name === setlistSong.backgroundColor)?.value
+					: "white",
+			}}
+			className={styles.songItem}
+		>
+			<div className={styles.songControls}>
+				<div className={styles.dragHandle} {...attributes} {...listeners}>
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 20 20"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<circle cx="5" cy="5" r="1.5" fill="currentColor" />
+						<circle cx="15" cy="5" r="1.5" fill="currentColor" />
+						<circle cx="5" cy="10" r="1.5" fill="currentColor" />
+						<circle cx="15" cy="10" r="1.5" fill="currentColor" />
+						<circle cx="5" cy="15" r="1.5" fill="currentColor" />
+						<circle cx="15" cy="15" r="1.5" fill="currentColor" />
+					</svg>
+				</div>
+				{isEditingNumber ? (
+					<input
+						type="number"
+						className={styles.songNumberInput}
+						value={numberValue}
+						onChange={(e) => setNumberValue(e.target.value)}
+						onBlur={handleNumberBlur}
+						onKeyDown={handleNumberKeyDown}
+						autoFocus
+						min="1"
+					/>
+				) : (
+					<div
+						className={styles.songNumber}
+						onClick={() => setIsEditingNumber(true)}
+						title="Klicka för att ändra position"
+					>
+						{index + 1}
+					</div>
+				)}
+			</div>
+
+			<div className={styles.songContent}>
+				<div className={styles.songHeader}>
+					<div className={styles.songTitle}>
+						{setlistSong.song.title}
+						{setlistSong.song.key && (
+							<span className={styles.metaBadge}>
+								{setlistSong.song.key}
+							</span>
+						)}
+						{setlistSong.song.tempo && (
+							<span className={styles.metaBadge}>
+								{setlistSong.song.tempo}
+							</span>
+						)}
+					</div>
+				</div>
+
+				<div className={styles.songOptions}>
+					<input
+						type="text"
+						className={styles.commentInput}
+						placeholder="Lägg till kommentar…"
+						value={setlistSong.comments || ""}
+						onChange={(e) =>
+							onUpdateSong(setlistSong.id, {
+								comments: e.target.value,
+							})
+						}
+					/>
+
+					<div className={styles.colorPicker}>
+						<button
+							className={
+								!setlistSong.backgroundColor
+									? styles.colorBtnActive
+									: styles.colorBtn
+							}
+							onClick={() =>
+								onUpdateSong(setlistSong.id, {
+									backgroundColor: "",
+								})
+							}
+							title="Ingen färg"
+						>
+							✕
+						</button>
+						{COLORS.map((color) => (
+							<button
+								key={color.name}
+								className={
+									setlistSong.backgroundColor === color.name
+										? styles.colorBtnActive
+										: styles.colorBtn
+								}
+								style={{ backgroundColor: color.value }}
+								onClick={() =>
+									onUpdateSong(setlistSong.id, {
+										backgroundColor: color.name,
+									})
+								}
+								title={color.label}
+							/>
+						))}
+					</div>
+
+					{formData.numberOfSets > 1 && (
+						<select
+							className={styles.setSelect}
+							value={setlistSong.setNumber}
+							onChange={(e) =>
+								onMoveSongToSet(
+									setlistSong.id,
+									parseInt(e.target.value)
+								)
+							}
+						>
+							{Array.from(
+								{ length: formData.numberOfSets },
+								(_, i) => i + 1
+							).map((num) => (
+								<option key={num} value={num}>
+									Set {num}
+								</option>
+							))}
+						</select>
+					)}
+
+					<button
+						onClick={() => onRemoveSong(setlistSong.id)}
+						className="btn btn-small btn-danger"
+					>
+						Ta bort
+					</button>
+				</div>
+			</div>
+		</div>
+	)
+}
+
 export default function EditSetlistPage({ params }: { params: Promise<{ id: string }> }) {
 	const router = useRouter()
 	const [setlist, setSetlist] = useState<Setlist | null>(null)
@@ -71,6 +297,13 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 	const [showAutocomplete, setShowAutocomplete] = useState(false)
 	const [formData, setFormData] = useState({ name: "", numberOfSets: 1, date: "" })
 	const [setlistId, setSetlistId] = useState<string | null>(null)
+
+	const sensors = useSensors(
+		useSensor(PointerSensor),
+		useSensor(KeyboardSensor, {
+			coordinateGetter: sortableKeyboardCoordinates,
+		})
+	)
 
 	useEffect(() => {
 		const getParams = async () => {
@@ -194,37 +427,75 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 		)
 	}
 
-	const moveSong = (id: string, direction: "up" | "down") => {
-		const song = setlistSongs.find((s) => s.id === id)
-		if (!song) return
+	const handleDragEnd = (event: DragEndEvent, setNumber: number) => {
+		const { active, over } = event
 
-		const songsInSet = setlistSongs
-			.filter((s) => s.setNumber === song.setNumber)
-			.sort((a, b) => a.position - b.position)
-
-		const currentIndex = songsInSet.findIndex((s) => s.id === id)
-
-		if (
-			(direction === "up" && currentIndex === 0) ||
-			(direction === "down" && currentIndex === songsInSet.length - 1)
-		) {
+		if (!over || active.id === over.id) {
 			return
 		}
 
-		const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1
-		const swapSong = songsInSet[newIndex]
+		const songsInSet = setlistSongs
+			.filter((s) => s.setNumber === setNumber)
+			.sort((a, b) => a.position - b.position)
 
-		setSetlistSongs(
-			setlistSongs.map((s) => {
-				if (s.id === song.id) {
-					return { ...s, position: swapSong.position }
+		const oldIndex = songsInSet.findIndex((s) => s.id === active.id)
+		const newIndex = songsInSet.findIndex((s) => s.id === over.id)
+
+		if (oldIndex === -1 || newIndex === -1) {
+			return
+		}
+
+		const reorderedSongs = arrayMove(songsInSet, oldIndex, newIndex)
+
+		// Update positions for all songs in the set
+		const updatedSongs = setlistSongs.map((song) => {
+			if (song.setNumber === setNumber) {
+				const reorderedSong = reorderedSongs.find((s) => s.id === song.id)
+				if (reorderedSong) {
+					return { ...song, position: reorderedSongs.indexOf(reorderedSong) }
 				}
-				if (s.id === swapSong.id) {
-					return { ...s, position: song.position }
-				}
-				return s
-			})
-		)
+			}
+			return song
+		})
+
+		setSetlistSongs(updatedSongs)
+	}
+
+	const handleChangePosition = (id: string, newPosition: number, setNumber: number) => {
+		const songsInSet = setlistSongs
+			.filter((s) => s.setNumber === setNumber)
+			.sort((a, b) => a.position - b.position)
+
+		const currentIndex = songsInSet.findIndex((s) => s.id === id)
+		if (currentIndex === -1) return
+
+		// Clamp newPosition to valid range (1-indexed for user, convert to 0-indexed)
+		const maxPosition = songsInSet.length
+		const targetPosition = Math.max(1, Math.min(newPosition, maxPosition))
+		const targetIndex = targetPosition - 1
+
+		if (targetIndex === currentIndex) {
+			return
+		}
+
+		// Create a new array with the song moved to the target position
+		const reorderedSongs = arrayMove(songsInSet, currentIndex, targetIndex)
+
+		// Update positions for all songs in the set
+		const updatedSongs = setlistSongs.map((song) => {
+			if (song.setNumber !== setNumber) {
+				return song
+			}
+
+			const reorderedSong = reorderedSongs.find((s) => s.id === song.id)
+			if (reorderedSong) {
+				return { ...song, position: reorderedSongs.indexOf(reorderedSong) }
+			}
+
+			return song
+		})
+
+		setSetlistSongs(updatedSongs)
 	}
 
 	const moveSongToSet = (id: string, newSetNumber: number) => {
@@ -452,6 +723,8 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 				{Array.from({ length: formData.numberOfSets }, (_, i) => i + 1).map(
 					(setNumber) => {
 						const songs = getSongsBySet(setNumber)
+						const songIds = songs.map((s) => s.id)
+						
 						return (
 							<div key={setNumber} className={styles.set}>
 								<h2 className={styles.setTitle}>
@@ -465,138 +738,31 @@ export default function EditSetlistPage({ params }: { params: Promise<{ id: stri
 										Inga låtar i detta set. Använd söket ovan för att lägga till låtar.
 									</div>
 								) : (
-									<div className={styles.songList}>
-										{songs.map((setlistSong, index) => (
-											<div
-												key={setlistSong.id}
-												className={styles.songItem}
-												style={{
-													backgroundColor: setlistSong.backgroundColor
-														? COLORS.find((c) => c.name === setlistSong.backgroundColor)
-															?.value
-														: "white",
-												}}
-											>
-												<div className={styles.songControls}>
-													<div className={styles.orderButtons}>
-														<button
-															onClick={() => moveSong(setlistSong.id, "up")}
-															disabled={index === 0}
-															className={styles.orderBtn}
-															title="Flytta upp"
-														>
-															▲
-														</button>
-														<button
-															onClick={() => moveSong(setlistSong.id, "down")}
-															disabled={index === songs.length - 1}
-															className={styles.orderBtn}
-															title="Flytta ner"
-														>
-															▼
-														</button>
-													</div>
-													<div className={styles.songNumber}>{index + 1}</div>
-												</div>
-
-												<div className={styles.songContent}>
-													<div className={styles.songHeader}>
-														<div className={styles.songTitle}>
-															{setlistSong.song.title}
-															{setlistSong.song.key && (
-																<span className={styles.metaBadge}>
-																	{setlistSong.song.key}
-																</span>
-															)}
-															{setlistSong.song.tempo && (
-																<span className={styles.metaBadge}>
-																	{setlistSong.song.tempo}
-																</span>
-															)}
-														</div>
-													</div>
-
-													<div className={styles.songOptions}>
-														<input
-															type="text"
-															className={styles.commentInput}
-															placeholder="Lägg till kommentar…"
-															value={setlistSong.comments || ""}
-															onChange={(e) =>
-																updateSong(setlistSong.id, {
-																	comments: e.target.value,
-																})
-															}
-														/>
-
-														<div className={styles.colorPicker}>
-															<button
-																className={
-																	!setlistSong.backgroundColor
-																		? styles.colorBtnActive
-																		: styles.colorBtn
-																}
-																onClick={() =>
-																	updateSong(setlistSong.id, {
-																		backgroundColor: "",
-																	})
-																}
-																title="Ingen färg"
-															>
-																✕
-															</button>
-															{COLORS.map((color) => (
-																<button
-																	key={color.name}
-																	className={
-																		setlistSong.backgroundColor === color.name
-																			? styles.colorBtnActive
-																			: styles.colorBtn
-																	}
-																	style={{ backgroundColor: color.value }}
-																	onClick={() =>
-																		updateSong(setlistSong.id, {
-																			backgroundColor: color.name,
-																		})
-																	}
-																	title={color.label}
-																/>
-															))}
-														</div>
-
-														{formData.numberOfSets > 1 && (
-															<select
-																className={styles.setSelect}
-																value={setlistSong.setNumber}
-																onChange={(e) =>
-																	moveSongToSet(
-																		setlistSong.id,
-																		parseInt(e.target.value)
-																	)
-																}
-															>
-																{Array.from(
-																	{ length: formData.numberOfSets },
-																	(_, i) => i + 1
-																).map((num) => (
-																	<option key={num} value={num}>
-																		Set {num}
-																	</option>
-																))}
-															</select>
-														)}
-
-														<button
-															onClick={() => removeSong(setlistSong.id)}
-															className="btn btn-small btn-danger"
-														>
-															Ta bort
-														</button>
-													</div>
-												</div>
+									<DndContext
+										sensors={sensors}
+										collisionDetection={closestCenter}
+										onDragEnd={(event) => handleDragEnd(event, setNumber)}
+									>
+										<SortableContext
+											items={songIds}
+											strategy={verticalListSortingStrategy}
+										>
+											<div className={styles.songList}>
+												{songs.map((setlistSong, index) => (
+													<SortableSongItem
+														key={setlistSong.id}
+														setlistSong={setlistSong}
+														index={index}
+														formData={formData}
+														onUpdateSong={updateSong}
+														onRemoveSong={removeSong}
+														onMoveSongToSet={moveSongToSet}
+														onChangePosition={handleChangePosition}
+													/>
+												))}
 											</div>
-										))}
-									</div>
+										</SortableContext>
+									</DndContext>
 								)}
 							</div>
 						)
